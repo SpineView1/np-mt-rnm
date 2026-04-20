@@ -1,0 +1,48 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "np-mt-rnm"
+version = "0.1.0"
+description = "NP cell mechanotransduction regulatory network model — paper artifact"
+readme = "README.md"
+license = { file = "LICENSE" }
+authors = [
+  { name = "Zerihun G. Workineh", email = "zerihungetahun.workineh@upf.edu" },
+  { name = "Jérôme Noailly" },
+  { name = "Francis Chemorion", email = "francis.chemorion@upf.edu" },
+]
+requires-python = ">=3.11"
+dependencies = [
+  "numpy>=1.26,<3",
+  "scipy>=1.11,<2",
+  "pandas>=2.1,<3",
+  "matplotlib>=3.8,<4",
+  "openpyxl>=3.1,<4",
+  "joblib>=1.3,<2",
+  "networkx>=3.2,<4",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8",
+  "pytest-xdist>=3.5",
+  "ruff>=0.5",
+]
+
+[project.urls]
+Homepage = "https://github.com/SpineView1/np-mt-rnm"
+Paper = "https://doi.org/TBD"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["np_mt_rnm*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra --strict-markers"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
