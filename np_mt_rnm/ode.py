@@ -2,8 +2,8 @@
 
 The SQUADS formalism (Standardized Qualitative Dynamical Systems) is:
 
-    dX_i/dt = (-exp(0.5h) + exp(h(ω_i - 0.5)))
-              / ((1 - exp(0.5h)) * (1 + exp(h(ω_i - 0.5))))
+    dX_i/dt = (-exp(0.5h) + exp(-h(ω_i - 0.5)))
+              / ((1 - exp(0.5h)) * (1 + exp(-h(ω_i - 0.5))))
               - γ_i * X_i
 
 where ω_i ∈ [0, 1] is the effective regulatory input for node i,
@@ -97,8 +97,10 @@ def squads_rhs(
     omega[only_inh] = 1.0 - i_inner[only_inh]
     # nodes with neither: omega stays 0
 
-    # SQUADS activation curve.
-    exp_h_shift = np.exp(H * (omega - 0.5))
+    # SQUADS activation curve. Matches MATLAB ODESysFunS.m line 77 (negative exponent).
+    # At omega=0 the numerator and denominator both go to 0/(−∞); handled implicitly
+    # because numerator = −exp(5) + exp(−h·(ω−0.5)) → 0 when ω=0.
+    exp_h_shift = np.exp(-H * (omega - 0.5))
     numer = -_EXP_HALF_H + exp_h_shift
     denom = _DENOM_ONE_MINUS * (1.0 + exp_h_shift)
     activation = numer / denom

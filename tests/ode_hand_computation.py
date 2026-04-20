@@ -11,8 +11,11 @@ EXP_HALF_H = math.exp(5.0)  # exp(0.5 * h)
 
 
 def _activation_term(omega: float) -> float:
-    """The SQUADS activation function value at a given omega."""
-    exp_h_shift = math.exp(H * (omega - 0.5))
+    """The SQUADS activation function value at a given omega.
+
+    Matches MATLAB ODESysFunS.m line 77 (negative exponent).
+    """
+    exp_h_shift = math.exp(-H * (omega - 0.5))
     return (-EXP_HALF_H + exp_h_shift) / ((1.0 - EXP_HALF_H) * (1.0 + exp_h_shift))
 
 
