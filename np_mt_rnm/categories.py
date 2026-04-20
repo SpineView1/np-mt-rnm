@@ -8,6 +8,11 @@ Some nodes appear in multiple categories (e.g., HO-1, GPX1, SOD1, SOD2, CAT
 appear in both "metabolic" and "oxidative_proteostasis"). This is intentional
 — categories are display groupings, not a strict taxonomy. Use
 `get_primary_category(node)` for the single canonical category (first-listed).
+
+The ``"other"`` category collects nodes present in the Excel but not placed in
+any MATLAB ``group_categories`` panel. This preserves MATLAB's silence — these
+nodes exist in the network but weren't given a display group by the biologist.
+No biological assignments have been invented.
 """
 from __future__ import annotations
 
@@ -24,6 +29,7 @@ CATEGORY_LABELS: dict[str, str] = {
     "oxidative_proteostasis":         "Oxidative-stress defense & proteostasis",
     "mapk":                           "MAPK & stress-activated kinases",
     "rho_cytoskeletal":               "Rho GTPases, cytoskeletal & Hippo regulators",
+    "other":                          "Other / unclassified",
 }
 
 # Canonical order for figure panel layout (matches MATLAB iteration order).
@@ -39,6 +45,7 @@ CATEGORY_ORDER: tuple[str, ...] = (
     "ecm_matrix",
     "cytokines_chemokines_proteases",
     "cell_fate",
+    "other",
 )
 
 # Transcribed verbatim from MATLAB group_categories. Preserve exact node names.
@@ -89,6 +96,11 @@ _CATEGORY_TO_NODES: dict[str, list[str]] = {
         "RhoA-M", "RhoA-E", "RAC1-M", "RAC1-E", "CDC42",
         "ROCK-M", "ROCK-E", "PAK1", "PKN1",
         "FAK-M", "FAK-E", "MST1/2", "LATS1/2",
+    ],
+    "other": [
+        "ANXA1", "BAD", "DAG", "IKK", "iNOS", "IκBα",
+        "LIMK1", "MAP3K", "SMIT1", "SOX5", "SOX6", "TAUT",
+        "β-catenin",
     ],
 }
 

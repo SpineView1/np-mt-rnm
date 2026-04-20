@@ -67,3 +67,16 @@ def test_unknown_node_raises():
 def test_unknown_category_raises():
     with pytest.raises(KeyError):
         nodes_in_category("not_a_category")
+
+
+def test_other_category_contains_only_matlab_unassigned_nodes():
+    """The 'other' category is the catch-all for nodes not in any MATLAB
+    group_categories. This preserves the MATLAB source's silence — we don't
+    invent biological assignments."""
+    other = nodes_in_category("other")
+    expected = {
+        "ANXA1", "BAD", "DAG", "IKK", "iNOS", "IκBα",
+        "LIMK1", "MAP3K", "SMIT1", "SOX5", "SOX6", "TAUT",
+        "β-catenin",
+    }
+    assert set(other) == expected
