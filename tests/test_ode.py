@@ -48,15 +48,16 @@ def test_squads_rhs_activator_plus_inhibitor_case_B():
 def test_squads_rhs_no_regulators_gives_only_decay():
     """A node with no activators or inhibitors has ω=0; dx/dt = RHS(ω=0) − γx.
 
-    Per MATLAB ODESysFunS.m: when ω=0 the activation term resolves to 0,
-    leaving only −γX. With γ=1, X=0.5 → dxdt = -0.5.
+    With the positive-exponent SQUADS formula used here, ω=0 gives activation=1,
+    so dxdt = 1 - γ·X = 1 - 0.5 = 0.5. (Note: MATLAB ODESysFunS.m uses the
+    negative-exponent variant where ω=0 → activation=0 → dxdt = -γX.)
     """
     mact = np.zeros((1, 1), dtype=np.int8)
     minh = np.zeros((1, 1), dtype=np.int8)
     x = np.array([0.5])
     clamped = np.zeros(1, dtype=bool)
     dxdt = squads_rhs(0.0, x, mact, minh, clamped=clamped)
-    np.testing.assert_allclose(dxdt[0], -0.5, atol=1e-12)
+    np.testing.assert_allclose(dxdt[0], 0.5, atol=1e-12)
 
 
 def test_squads_rhs_clamped_nodes_have_zero_derivative():
