@@ -1,0 +1,32 @@
+cff-version: 1.2.0
+message: If you use this software, please cite both the paper and the repository.
+type: software
+title: np-mt-rnm
+version: 0.1.0
+date-released: 2026-04-27
+license: MIT
+repository-code: "https://github.com/SpineView1/np-mt-rnm"
+authors:
+  - family-names: Workineh
+    given-names: Zerihun G.
+    email: zerihungetahun.workineh@upf.edu
+    affiliation: Universitat Pompeu Fabra, BCN MedTech
+  - family-names: Noailly
+    given-names: Jérôme
+    affiliation: Universitat Pompeu Fabra, BCN MedTech
+  - family-names: Chemorion
+    given-names: Francis
+    email: francis.chemorion@upf.edu
+    affiliation: Universitat Pompeu Fabra, BCN MedTech
+preferred-citation:
+  type: article
+  authors:
+    - family-names: Workineh
+      given-names: Zerihun G.
+    - family-names: Noailly
+      given-names: Jérôme
+  title: >-
+    A systems-level network model reveals how mechanical loading organizes
+    regulatory states and transitions in nucleus pulposus cells
+  year: 2026
+  doi: 10.TBD/TBD
