@@ -195,3 +195,39 @@ def plot_transition_trajectories(
     )
     fig.savefig(out_path, dpi=FIG_DPI, bbox_inches="tight")
     plt.close(fig)
+
+
+def plot_fig9_forest(
+    outcomes,   # list[FalsificationOutcome] — forward ref
+    out_path: Path,
+) -> None:
+    """Two-panel Fig 9: (A) bar of Δ colored by class, (B) forest plot with 95% CIs."""
+    _apply_paper_style()
+    fig, axes = plt.subplots(
+        1, 2, figsize=(14, max(6, 0.18 * len(outcomes))), constrained_layout=True
+    )
+    sorted_outs = sorted(outcomes, key=lambda o: o.delta)
+    nodes = [o.rule.node for o in sorted_outs]
+    deltas = [o.delta for o in sorted_outs]
+    colors = [
+        "#1f9d55" if o.rule.cls == "anabolic" else "#c74343" for o in sorted_outs
+    ]
+
+    axes[0].barh(nodes, deltas, color=colors, edgecolor="black", linewidth=0.3)
+    axes[0].axvline(0, color="k", lw=0.6)
+    axes[0].set_xlabel("Δ = Normal − Hyper")
+    axes[0].set_title("A. Directional effects")
+
+    for i, o in enumerate(sorted_outs):
+        axes[1].plot([o.ci_lower, o.ci_upper], [i, i], color="k", lw=0.8)
+        axes[1].plot(o.delta, i, "o", color=colors[i], markersize=4)
+    axes[1].set_yticks(np.arange(len(sorted_outs)))
+    axes[1].set_yticklabels(nodes)
+    axes[1].axvline(0, color="k", lw=0.4, ls=":")
+    axes[1].axvline(0.02, color="gray", lw=0.4, ls="--")
+    axes[1].axvline(-0.02, color="gray", lw=0.4, ls="--")
+    axes[1].set_xlabel("Δ with 95% bootstrap CI")
+    axes[1].set_title("B. Bootstrap CIs")
+
+    fig.savefig(out_path, dpi=FIG_DPI, bbox_inches="tight")
+    plt.close(fig)
