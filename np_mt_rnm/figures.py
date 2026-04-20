@@ -231,3 +231,90 @@ def plot_fig9_forest(
 
     fig.savefig(out_path, dpi=FIG_DPI, bbox_inches="tight")
     plt.close(fig)
+
+
+def plot_rescue_category(
+    results,   # list[PerturbationResult] — forward ref
+    category: str,
+    out_path: Path,
+    title: str,
+) -> None:
+    """4-panel figure reproducing Fig 10/11/12:
+       A = heatmap of mean Δ across perturbations × nodes in category,
+       B = ranked bar of mean|Δ| per perturbation,
+       C = node-level Δ for the top-ranked combinatorial perturbation,
+       D = node-level Δ for the strongest single-node perturbation.
+    """
+    from np_mt_rnm.rescue import mean_abs_displacement
+    _apply_paper_style()
+
+    node_names = results[0].node_names
+    nodes = [n for n in nodes_in_category(category) if n in node_names]
+    idx = [node_names.index(n) for n in nodes]
+    if not idx:
+        raise ValueError(f"no network nodes in category {category!r}")
+
+    fig, axes = plt.subplots(2, 2, figsize=(16, 12), constrained_layout=True)
+
+    # Panel A — heatmap of perturbations × nodes-in-category.
+    M = np.array([r.mean_delta[idx] for r in results])
+    labels = [r.perturbation.label for r in results]
+    vmax = float(np.max(np.abs(M))) if np.max(np.abs(M)) > 0 else 1.0
+    im = axes[0, 0].imshow(M, aspect="auto", cmap="RdBu_r", vmin=-vmax, vmax=vmax)
+    axes[0, 0].set_yticks(np.arange(len(labels)))
+    axes[0, 0].set_yticklabels(labels, fontsize=7)
+    axes[0, 0].set_xticks(np.arange(len(nodes)))
+    axes[0, 0].set_xticklabels(nodes, rotation=60, ha="right", fontsize=7)
+    axes[0, 0].set_title("A. Mean Δ (perturbed − Hyper baseline)")
+    fig.colorbar(im, ax=axes[0, 0], label="Δ")
+
+    # Panel B — ranked mean|Δ| per perturbation.
+    scores = [mean_abs_displacement(r, nodes) for r in results]
+    order = np.argsort(scores)[::-1]
+    axes[0, 1].barh(
+        [labels[i] for i in order][::-1],
+        [scores[i] for i in order][::-1],
+        color="#555",
+        edgecolor="black",
+        linewidth=0.4,
+    )
+    axes[0, 1].set_xlabel("Mean |Δ|")
+    axes[0, 1].set_title(f"B. Ranked by mean|Δ| — {category}")
+
+    # Panel C — highest-ranked combinatorial perturbation (anabolic↑ + catabolic↓).
+    combos = [i for i in order if results[i].perturbation.anabolic_up and results[i].perturbation.catabolic_down]
+    top_combo = results[combos[0]] if combos else results[order[0]]
+    c_vals = [top_combo.mean_delta[node_names.index(n)] for n in nodes]
+    c_errs = [top_combo.std_delta[node_names.index(n)] for n in nodes]
+    axes[1, 0].bar(
+        nodes,
+        c_vals,
+        yerr=c_errs,
+        color=["#1f9d55" if v > 0 else "#c74343" for v in c_vals],
+        edgecolor="black", linewidth=0.4, error_kw=dict(lw=0.6, capsize=2),
+    )
+    axes[1, 0].axhline(0, color="k", lw=0.5)
+    axes[1, 0].set_xticklabels(nodes, rotation=60, ha="right")
+    axes[1, 0].set_ylabel("Δ")
+    axes[1, 0].set_title(f"C. Top combo: {top_combo.perturbation.label}")
+
+    # Panel D — strongest single-node perturbation.
+    singles = [i for i in order if not (results[i].perturbation.anabolic_up and results[i].perturbation.catabolic_down)]
+    top_single = results[singles[0]] if singles else results[order[0]]
+    s_vals = [top_single.mean_delta[node_names.index(n)] for n in nodes]
+    s_errs = [top_single.std_delta[node_names.index(n)] for n in nodes]
+    axes[1, 1].bar(
+        nodes,
+        s_vals,
+        yerr=s_errs,
+        color=["#1f9d55" if v > 0 else "#c74343" for v in s_vals],
+        edgecolor="black", linewidth=0.4, error_kw=dict(lw=0.6, capsize=2),
+    )
+    axes[1, 1].axhline(0, color="k", lw=0.5)
+    axes[1, 1].set_xticklabels(nodes, rotation=60, ha="right")
+    axes[1, 1].set_ylabel("Δ")
+    axes[1, 1].set_title(f"D. Top single: {top_single.perturbation.label}")
+
+    fig.suptitle(title, fontsize=13)
+    fig.savefig(out_path, dpi=FIG_DPI, bbox_inches="tight")
+    plt.close(fig)
