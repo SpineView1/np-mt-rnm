@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.venv/
+venv/
+build/
+dist/
+
+# Results (re-generable by running scripts)
+# Do NOT ignore results/ — we commit the figures and web_bundle as paper artifacts
+
+# OS/editor
+.DS_Store
+.idea/
+.vscode/
+*.swp
+
+# Large intermediates
+*.npz.tmp
