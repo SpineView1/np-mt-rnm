@@ -46,8 +46,11 @@ def compute_topology(net: Network) -> TopologyMetrics:
     signed_out = {node: out_act[node] + out_inh[node] for node in G.nodes()}
 
     bet = nx.betweenness_centrality(G, normalized=True)
-    hclose = nx.harmonic_centrality(G)
-    # Normalize harmonic by (n-1) for comparability with paper-like values.
+    # Harmonic closeness (out-closeness on the directed graph): how easily
+    # a node reaches all others. Paper Fig 3C ranks broadcasters (ROS, NF-κB)
+    # highest, so we compute on G.reverse() which makes harmonic_centrality
+    # measure outgoing reach from the source node.
+    hclose = nx.harmonic_centrality(G.reverse(copy=False))
     if n > 1:
         hclose = {k: v / (n - 1) for k, v in hclose.items()}
 
