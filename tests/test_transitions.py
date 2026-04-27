@@ -46,3 +46,29 @@ def test_hypo_to_normal_anabolic_endpoint_greater_than_start(net):
     col2a1_idx = net.node_names.index("COL2A1")
     assert result.means[-1, acan_idx] > result.means[0, acan_idx]
     assert result.means[-1, col2a1_idx] > result.means[0, col2a1_idx]
+
+
+def test_run_trajectory_shape_and_switch():
+    """Trajectory has expected shape and reflects regime switch at t_switch."""
+    from np_mt_rnm.simulation import REGIME_PRESETS
+    from np_mt_rnm.transitions import run_trajectory
+
+    net = load_network(DATA_XLSX)
+    result = run_trajectory(
+        net,
+        regime_a=REGIME_PRESETS["Normal"],
+        regime_b=REGIME_PRESETS["Hyper"],
+        t_switch=10.0,
+        t_end=30.0,
+        n_t=31,
+        n_reps=2,
+        seed=42,
+        n_jobs=1,
+    )
+    assert result.t.shape == (31,)
+    assert result.mean.shape == (31, len(net.node_names))
+    assert result.std.shape == (31, len(net.node_names))
+    assert result.t[0] == 0.0
+    assert result.t[-1] == 30.0
+    # t_switch=10 in a 31-pt grid 0..30 (step 1.0) lands at index 10.
+    assert np.isclose(result.t[10], 10.0)
