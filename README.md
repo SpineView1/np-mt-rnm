@@ -2,7 +2,7 @@
 
 **A systems-level network model reveals how mechanical loading organizes regulatory states and transitions in nucleus pulposus cells**
 
-Workineh Z. G.<sup>1</sup>, Noailly J.<sup>1</sup>
+Workineh Z. G.<sup>1</sup>, Chemorion F. K.<sup>1</sup>, Noailly J.<sup>1</sup>
 
 <sup>1</sup>BCN MedTech, Universitat Pompeu Fabra, Barcelona, Spain
 
@@ -314,7 +314,7 @@ Both should be corrected in the manuscript before submission.
 
 If you use this code or model, please cite both the paper and the software:
 
-> Workineh Z. G. & Noailly J. (2026). *A systems-level network model reveals how mechanical loading organizes regulatory states and transitions in nucleus pulposus cells.*
+> Workineh Z. G., Chemorion F. K. & Noailly J. (2026). *A systems-level network model reveals how mechanical loading organizes regulatory states and transitions in nucleus pulposus cells.*
 
 Software citation: see `CITATION.cff`.
 
@@ -325,8 +325,8 @@ Software citation: see `CITATION.cff`.
 | Author | Role | Affiliation |
 |---|---|---|
 | Zerihun G. Workineh | Lead author, model design, MATLAB implementation | BCN MedTech, Universitat Pompeu Fabra |
-| Jérôme Noailly | Senior author, supervision | BCN MedTech, Universitat Pompeu Fabra |
 | Francis K. Chemorion | Python port, SBML export, software engineering | BCN MedTech, Universitat Pompeu Fabra |
+| Jérôme Noailly | Senior author, supervision | BCN MedTech, Universitat Pompeu Fabra |
 
 ---
 
