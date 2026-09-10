@@ -56,6 +56,13 @@ def test_export_produces_valid_sbml(tmp_path):
     # Rate rules: one per non-boundary species (147 - 3 = 144).
     assert m.getNumRules() == 144
 
+    # NutD lost all its edges in the 2026-09 revision but is NOT an input:
+    # MATLAB gives an unregulated node omega = 0, so dX/dt = -X and it decays
+    # to 0. It must therefore still carry a rate rule.
+    nutd = m.getSpecies("NutD")
+    assert nutd is not None and not nutd.getBoundaryCondition()
+    assert any(m.getRule(i).getVariable() == "NutD" for i in range(m.getNumRules()))
+
 
 def test_simulate_via_tellurium_normal_regime(tmp_path):
     """End-to-end: export → load via tellurium → simulate Normal regime."""

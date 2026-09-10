@@ -45,13 +45,41 @@ def test_load_network_stimuli_includes_hypo_nl_hl():
 
 
 def test_load_network_edge_count_matches_excel():
-    """Reconciles paper discrepancy: Section 2.1 says 356, Section 3.1 says 357.
+    """Pins the edge count of the 2026-09 dataset revision.
 
-    This test records whatever the Excel actually contains so the paper can
-    be updated to match. The assertion is intentionally strict — if the count
-    changes, we want to know.
+    History: the paper's Section 2.1 and abstract say 356 and Section 3.1
+    says 357; the pre-revision Excel actually held 357. The 2026-09 revision
+    disconnected NutD entirely (4 activation edges removed), leaving 353.
+    The paper text needs to be updated to match.
     """
     net = load_network(DATA_XLSX)
     total_edges = int(net.mact.sum() + net.minh.sum())
-    # Whichever number is correct will be pinned here after the first run.
-    assert total_edges in (356, 357), f"expected 356 or 357 edges, got {total_edges}"
+    assert total_edges == 353, f"expected 353 edges, got {total_edges}"
+
+
+def test_nutd_is_disconnected():
+    """The 2026-09 dataset revision removed every NutD edge.
+
+    Removed: Hypo->NutD, NutD->HIF-1a, NutD->MitD, NutD->ROS (all activation).
+    NutD remains in the node list (still 147 nodes) but is now an orphan, so
+    it must have no incoming and no outgoing regulation.
+    """
+    net = load_network(DATA_XLSX)
+    i = net.node_names.index("NutD")
+    assert net.mact[i, :].sum() == 0 and net.minh[i, :].sum() == 0, "NutD has regulators"
+    assert net.mact[:, i].sum() == 0 and net.minh[:, i].sum() == 0, "NutD has targets"
+
+
+def test_previously_removed_nutd_edges_are_absent():
+    """Guards the four specific edges dropped in the 2026-09 revision."""
+    net = load_network(DATA_XLSX)
+    idx = {n: k for k, n in enumerate(net.node_names)}
+    for target, regulator in (
+        ("NutD", "Hypo"),
+        ("HIF-1\u03b1", "NutD"),
+        ("MitD", "NutD"),
+        ("ROS", "NutD"),
+    ):
+        assert net.mact[idx[target], idx[regulator]] == 0, (
+            f"edge {regulator} -> {target} should have been removed"
+        )

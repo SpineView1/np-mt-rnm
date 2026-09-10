@@ -318,3 +318,82 @@ def plot_rescue_category(
     fig.suptitle(title, fontsize=13)
     fig.savefig(out_path, dpi=FIG_DPI, bbox_inches="tight")
     plt.close(fig)
+
+
+# analyze_group_true_rescue's bar colours: blue = toward Normal, red = away.
+TRUE_RESCUE_TOWARD = "#1f66b8"
+TRUE_RESCUE_AWAY = "#c73333"
+# NORMAL_REF_THRESHOLD in RESCUE_NEW4_1_final.m — draw the 100% reference
+# line only when at least one strategy gets close to full restoration.
+NORMAL_REF_THRESHOLD = 80.0
+
+
+def plot_true_rescue_ranking(ranking, out_path: Path) -> None:
+    """Horizontal Top-N bar chart of TRUE Hyper→Normal rescue for one group.
+
+    Reproduces the figure drawn by analyze_group_true_rescue in
+    legacy/RESCUE_NEW4_1_final.m: strongest strategy at the top, one percentage
+    label per bar, a dashed zero line, and a dotted 100% reference line when
+    the best strategy reaches NORMAL_REF_THRESHOLD.
+    """
+    _apply_paper_style()
+
+    scores = np.asarray(ranking.rescue_percent, dtype=float)
+    labels = list(ranking.strategy_labels)
+    n = len(labels)
+
+    # Reverse so rank 1 is drawn at the top of the axis.
+    plot_scores = scores[::-1]
+    plot_labels = labels[::-1]
+
+    fig, ax = plt.subplots(figsize=(9.0, max(3.0, 0.42 * n + 1.6)))
+    colors = [TRUE_RESCUE_TOWARD if v >= 0 else TRUE_RESCUE_AWAY for v in plot_scores]
+    ax.barh(np.arange(1, n + 1), plot_scores, height=0.68, color=colors,
+            edgecolor="none")
+
+    best = float(scores.max()) if n else 0.0
+    lowest = float(min(plot_scores.min(), 0.0)) if n else 0.0
+
+    upper_target = best * 1.15 if best > 0 else 10.0
+    x_upper = max(np.ceil(upper_target / 10.0) * 10.0, 10.0)
+    x_lower = np.floor((lowest * 1.15) / 10.0) * 10.0 if lowest < 0 else 0.0
+
+    ax.axvline(0.0, color="black", linestyle="--", linewidth=1.2)
+    if best >= NORMAL_REF_THRESHOLD:
+        x_upper = max(x_upper, 105.0)
+        ax.axvline(100.0, color="0.35", linestyle=":", linewidth=1.2)
+        ax.text(100.0, n + 0.55, "100% Normal restoration", fontsize=8,
+                ha="right", va="bottom", color="0.35")
+
+    ax.set_xlim(x_lower, x_upper)
+    span = max(x_upper - x_lower, 1.0)
+
+    offset = 0.015 * span
+    for i, value in enumerate(plot_scores, start=1):
+        text = f"{value:.1f}%"
+        x = value + offset
+        # Labels always run rightwards from the bar's end. For a positive bar
+        # that puts them past the tip on white; for a negative bar it puts them
+        # back over the bar, which avoids colliding with the strategy names on
+        # the y-axis. Go white only when the label truly fits inside the bar.
+        approx_width = len(text) * 0.011 * span
+        inside_bar = value < 0 and (x + approx_width) <= 0.0
+        ax.text(
+            x, i, text,
+            va="center", ha="left", fontsize=8,
+            color="white" if inside_bar else "black",
+        )
+
+    ax.set_yticks(np.arange(1, n + 1))
+    ax.set_yticklabels(plot_labels)
+    ax.set_ylim(0.3, n + 0.7)
+    ax.set_xlabel("Rescue toward Normal profile (%)")
+    ax.set_title(
+        f"Top {n} rescue strategies — {ranking.group}\n"
+        "Hyper → Normal profile restoration"
+    )
+    ax.xaxis.grid(True, alpha=0.25)
+    ax.set_axisbelow(True)
+
+    fig.savefig(out_path, dpi=FIG_DPI, bbox_inches="tight")
+    plt.close(fig)

@@ -21,6 +21,7 @@ except ImportError:
     libsbml = None
 
 from np_mt_rnm.network import Network
+from np_mt_rnm.simulation import MECHANICAL_INPUTS
 
 
 def _sanitize_id(name: str) -> str:
@@ -169,11 +170,15 @@ def export_sbml(
             sanitized[idx] = f"{sid}_{idx}"
         seen[sanitized[idx]] = idx
 
-    # Boundary nodes = pure inputs with no activators AND no inhibitors.
-    # These are the mechanical loading stimuli (Hypo, NL, HL in this network).
-    is_boundary = np.array(
-        [(network.mact[i, :].sum() == 0 and network.minh[i, :].sum() == 0) for i in range(n)]
-    )
+    # Boundary nodes = the three mechanical loading stimuli, named explicitly.
+    # This used to be inferred as "no activators AND no inhibitors", which
+    # coincided until the 2026-09 revision disconnected NutD. NutD is not an
+    # input: MATLAB gives an unregulated node omega = 0, hence dX/dt = -X, so
+    # it must keep a rate rule and decay to 0 rather than be frozen.
+    missing_inputs = [name for name in MECHANICAL_INPUTS if name not in network.node_names]
+    if missing_inputs:
+        raise ValueError(f"network is missing mechanical input nodes: {missing_inputs}")
+    is_boundary = np.array([name in MECHANICAL_INPUTS for name in network.node_names])
 
     # Species: all nodes. Boundary nodes get BoundaryCondition=true so a loader
     # can clamp them via setInitialConcentration / r["X"] = v.

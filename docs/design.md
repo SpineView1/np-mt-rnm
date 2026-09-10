@@ -7,7 +7,7 @@
 
 ## 1. Context
 
-The biologist (Zerihun Workineh) has MATLAB code implementing a regulatory network model (RNM) of NP cell mechanotransduction: 147 nodes, 356 signed edges, three loading regimes (Hypo, Normal, Hyper), a falsification benchmark (45 rules, 95% pass rate), constrained transition-path analysis, and a rescue perturbation screen.
+The biologist (Zerihun Workineh) has MATLAB code implementing a regulatory network model (RNM) of NP cell mechanotransduction: 147 nodes, 353 signed edges (357 before the 2026-09 revision disconnected NutD), three loading regimes (Hypo, Normal, Hyper), a falsification benchmark (45 rules, 95% pass rate claimed), constrained transition-path analysis, and a rescue perturbation screen.
 
 The paper is being submitted in ~1 week and requires:
 
@@ -268,7 +268,7 @@ The biologist's workflow is to run the MATLAB scripts from scratch and validate 
 
 **Automated tests encode the paper's own claims as invariants:**
 
-- `test_network.py` — edge-list loader produces 147 nodes; edge count matches the Excel (reconcile 356 vs 357 discrepancy between paper Sections 2.1 and 3.1).
+- `test_network.py` — edge-list loader produces 147 nodes; edge count pinned at 353, with NutD asserted to be an orphan.
 - `test_ode.py` — SQUADS RHS at a fixed input vector gives the expected numerical output: two canned test cases (one single-activator node, one combined activator+inhibitor node) computed from the SQUADS formula by hand in a Jupyter notebook committed alongside the test, confirming sign and magnitude of `dx/dt`.
 - `test_ode_steady_state.py` — all regimes converge with `max|dx/dt| < 1e-8` at `t=100`.
 - `test_regime_polarities.py` — per Figs 4–5: Normal `ACAN > 0.8` and `COL10A1 ≈ 0`; Hyper `COL10A1 > 0.8` and `ACAN < 0.3`; MMP13 near zero under Normal, high under Hyper; TNF/IL6 near zero under Normal.
@@ -301,7 +301,9 @@ The biologist's workflow is to run the MATLAB scripts from scratch and validate 
 
 ## 11. Open Items
 
-- **Edge count discrepancy.** Paper Section 2.1 says 356 edges; Section 3.1 says 357. Resolve against `MT_PRIMARY4_1.xlsx` when loader is built. Update paper if needed.
+- **Edge count.** RESOLVED. The Excel held 357 (paper Section 2.1 said 356, Section 3.1 said 357); the 2026-09 revision removed NutD's four edges, so the current answer is **353** and all three places in the paper need updating.
+- **Hyper regime disagreement.** OPEN, for Zerihun. `NP_MT_RNM_FALSIFY4_1.m` uses `NL_hype = 0.10`; `RESCUE_NEW4_1_final.m` uses `NL_hype = 0.01`. The port mirrors each script (`REGIME_PRESETS["Hyper"]` and `["Hyper_rescue"]`). Choosing 0.10 for falsification costs one benchmark rule (AMPK), taking the pass rate from 41/45 to 40/45.
+- **NutD still in the rescue script's groups.** OPEN, for Zerihun. `RESCUE_NEW4_1_final.m` keeps NutD under 'Mechanical stimuli & its receptors' although it is now disconnected; `NP_MT_RNM_FALSIFY4_1.m` dropped it. The port follows the falsification script and leaves NutD uncategorised.
 - **Supplementary `NP-MT-EdgeList-Topology` file.** Paper mentions a structured edge-list file with literature annotations per edge. Need to confirm whether this is `MT_PRIMARY4_1.xlsx` or a separate artifact. If separate, that file goes in `data/` too.
 - **Parallel ODE solve reproducibility.** Each joblib worker seeds its RNG independently. Document the seeding protocol in `simulation.py` so figures are regenerable bit-for-bit across machines with the same `n_jobs`.
 - **UPF Docker registry details.** Hostname, auth method, push procedure — clarify before Step 10.

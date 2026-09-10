@@ -7,14 +7,22 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from np_mt_rnm.categories import NODE_CATEGORIES
-from np_mt_rnm.figures import plot_rescue_category
+from np_mt_rnm.categories import (
+    CATEGORY_LABELS,
+    CATEGORY_ORDER,
+    NODE_CATEGORIES,
+    nodes_in_category,
+)
+from np_mt_rnm.figures import plot_rescue_category, plot_true_rescue_ranking
 from np_mt_rnm.network import load_network
 from np_mt_rnm.rescue import (
+    DEFAULT_TOP_N,
     enumerate_perturbations,
     mean_abs_displacement,
+    rank_group_rescue,
     run_perturbation,
 )
+from np_mt_rnm.simulation import REGIME_PRESETS, run_replicates
 
 ROOT = Path(__file__).resolve().parents[1]
 N_REPS = 100
@@ -24,6 +32,17 @@ SEED = 20260420
 def main() -> None:
     net = load_network(ROOT / "data" / "MT_PRIMARY4_1.xlsx")
     perts = list(enumerate_perturbations())
+
+    # MATLAB solves SS_hyper_all and SS_norm_all once, then reuses them for
+    # every perturbation and for the TRUE-rescue distances. Do the same.
+    print("[rescue] Hyper baseline (shared by all 35 perturbations) ...")
+    hyper_baseline = run_replicates(
+        net, REGIME_PRESETS["Hyper_rescue"], n_reps=N_REPS, seed=SEED, n_jobs=-1
+    )
+    print("[rescue] Normal baseline (TRUE-rescue reference) ...")
+    normal_baseline = run_replicates(
+        net, REGIME_PRESETS["Normal"], n_reps=N_REPS, seed=SEED + 500, n_jobs=-1
+    )
 
     results = []
     for i, p in enumerate(perts):
@@ -35,6 +54,7 @@ def main() -> None:
             n_reps=N_REPS,
             seed=SEED + 1000 * i,
             n_jobs=-1,
+            baseline=hyper_baseline,
         )
         results.append(result)
 
@@ -90,6 +110,65 @@ def main() -> None:
     df = pd.DataFrame(per_node, columns=results[0].node_names)
     df.insert(0, "perturbation", [r.perturbation.label for r in results])
     df.to_csv(ROOT / "results" / "tables" / "rescue_per_node_deltas.csv", index=False)
+
+    # ---- TRUE Hyper -> Normal rescue rankings, per biological group --------
+    # Ports analyze_group_true_rescue in legacy/RESCUE_NEW4_1_final.m.
+    hyper_mean = hyper_baseline.mean()
+    normal_mean = normal_baseline.mean()
+    # FINAL: (n_nodes, n_strategies), mean perturbed state per strategy.
+    final_states = np.column_stack([r.perturbed_mean for r in results])
+    labels = [r.perturbation.label for r in results]
+
+    tables = ROOT / "results" / "tables"
+    figs_rescue = figs / "true_rescue"
+    figs_rescue.mkdir(parents=True, exist_ok=True)
+
+    ranking_rows = []
+    for cat in CATEGORY_ORDER:
+        if cat == "other":
+            continue
+        ranking = rank_group_rescue(
+            group=CATEGORY_LABELS[cat],
+            group_nodes=nodes_in_category(cat),
+            node_names=results[0].node_names,
+            hyper_mean=hyper_mean,
+            normal_mean=normal_mean,
+            final_states=final_states,
+            strategy_labels=labels,
+            top_n=DEFAULT_TOP_N,
+        )
+        if ranking.missing_nodes:
+            print(f"[rescue]   {cat}: nodes not in network: {ranking.missing_nodes}")
+
+        per_group = pd.DataFrame({
+            "rank": range(1, len(ranking.strategy_labels) + 1),
+            "rescue_strategy": ranking.strategy_labels,
+            "rescue_percent": ranking.rescue_percent,
+            "distance_to_normal": ranking.distance_to_normal,
+        })
+        per_group.to_csv(tables / f"true_rescue_top{DEFAULT_TOP_N}_{cat}.csv", index=False)
+
+        plot_true_rescue_ranking(
+            ranking, figs_rescue / f"true_rescue_top{DEFAULT_TOP_N}_{cat}.png"
+        )
+
+        for rank, (lab, pct, dist) in enumerate(
+            zip(ranking.strategy_labels, ranking.rescue_percent,
+                ranking.distance_to_normal), start=1
+        ):
+            ranking_rows.append({
+                "category": cat,
+                "group": CATEGORY_LABELS[cat],
+                "rank": rank,
+                "rescue_strategy": lab,
+                "rescue_percent": pct,
+                "distance_to_normal": dist,
+                "distance_hyper_to_normal": ranking.distance_hyper_to_normal,
+            })
+        best = ranking.strategy_labels[0]
+        print(f"[rescue]   {cat}: best = {best} ({ranking.rescue_percent[0]:.1f}%)")
+
+    pd.DataFrame(ranking_rows).to_csv(tables / "true_rescue_rankings.csv", index=False)
 
     print("[rescue] done")
 

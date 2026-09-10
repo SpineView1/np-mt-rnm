@@ -14,12 +14,32 @@ from scipy.integrate import solve_ivp
 from np_mt_rnm.network import Network
 from np_mt_rnm.ode import squads_rhs
 
+# The three chronic mechanical loading inputs. These are the only nodes that
+# are externally driven rather than computed by the network, so they are the
+# only SBML boundary species. Do NOT infer this set from "has no regulators":
+# since the 2026-09 revision NutD also has no regulators, but it is a normal
+# node whose omega is 0, giving dX/dt = -X (it decays to 0, it is not held).
+MECHANICAL_INPUTS: tuple[str, ...] = ("Hypo", "NL", "HL")
+
 # Per paper Section 2.2 and MATLAB baseline values.
+#
+# The two MATLAB scripts disagree on NL in the Hyper regime and we mirror each
+# one rather than picking a winner:
+#   NP_MT_RNM_FALSIFY4_1.m:53   Hypo_hype = 0.01; NL_hype = 0.10; HL_hype = 0.80
+#   RESCUE_NEW4_1_final.m:111   Hypo_hype = 0.01; NL_hype = 0.01; HL_hype = 0.80
+# "Hyper" is the falsification/baseline value, since that script produces the
+# paper's baseline figures and its NL endpoint agrees with transitions.py.
+# "Hyper_rescue" is used only by the rescue screen. Flagged for Zerihun.
 REGIME_PRESETS: dict[str, dict[str, float]] = {
-    "Hypo":   {"Hypo": 0.20, "NL": 0.01, "HL": 0.01},
-    "Normal": {"Hypo": 0.01, "NL": 0.80, "HL": 0.01},
-    "Hyper":  {"Hypo": 0.01, "NL": 0.01, "HL": 0.80},
+    "Hypo":         {"Hypo": 0.20, "NL": 0.01, "HL": 0.01},
+    "Normal":       {"Hypo": 0.01, "NL": 0.80, "HL": 0.01},
+    "Hyper":        {"Hypo": 0.01, "NL": 0.10, "HL": 0.80},
+    "Hyper_rescue": {"Hypo": 0.01, "NL": 0.01, "HL": 0.80},
 }
+
+# The three regimes the paper's baseline figures compare. "Hyper_rescue" is an
+# internal variant used only by the rescue screen, so it is excluded here.
+PAPER_REGIMES: tuple[str, ...] = ("Hypo", "Normal", "Hyper")
 
 # Solver settings per spec Section 6 (match MATLAB odeset).
 T_SPAN = (0.0, 100.0)
@@ -153,9 +173,11 @@ class ReplicateEnsemble:
         return self.steady_states.std(axis=0, ddof=1)
 
 
-def _one_replicate(net, regime, user_clamps, seed):
+def _one_replicate(net, regime, user_clamps, seed, x0=None):
     # Top-level helper so joblib can pickle it (when using loky backend).
-    return run_single_replicate(net, regime=regime, user_clamps=user_clamps, seed=seed)
+    return run_single_replicate(
+        net, regime=regime, user_clamps=user_clamps, seed=seed, x0=x0
+    )
 
 
 def run_replicates(
@@ -165,16 +187,36 @@ def run_replicates(
     user_clamps: Mapping[str, float] | None = None,
     seed: int = 0,
     n_jobs: int = -1,
+    x0_list: np.ndarray | None = None,
 ) -> ReplicateEnsemble:
     """Run `n_reps` replicates in parallel and return the ensemble.
 
     Each replicate gets a deterministic seed = `seed + replicate_index`
     so the ensemble is fully reproducible regardless of `n_jobs`.
+
+    `x0_list`, shape (n_reps, n_nodes), supplies an explicit initial state per
+    replicate instead of drawing a random one. This is what makes the rescue
+    screen paired-sequential: replicate r's perturbed run continues from
+    replicate r's own Hyper steady state, mirroring
+    run_reps_from_replicate_states_parallel in RESCUE_NEW4_1_final.m. When it
+    is given, `seed` no longer influences the initial conditions.
     """
     seeds = [seed + k for k in range(n_reps)]
 
+    if x0_list is None:
+        starts: list[np.ndarray | None] = [None] * n_reps
+    else:
+        x0_arr = np.asarray(x0_list, dtype=float)
+        if x0_arr.shape != (n_reps, len(net.node_names)):
+            raise ValueError(
+                f"x0_list must have shape ({n_reps}, {len(net.node_names)}), "
+                f"got {x0_arr.shape}"
+            )
+        starts = [x0_arr[k] for k in range(n_reps)]
+
     results = Parallel(n_jobs=n_jobs, backend="loky")(
-        delayed(_one_replicate)(net, regime, user_clamps, s) for s in seeds
+        delayed(_one_replicate)(net, regime, user_clamps, s, x0)
+        for s, x0 in zip(seeds, starts)
     )
 
     steady = np.stack([r.x_final for r in results])

@@ -1,0 +1,221 @@
+category,group,rank,rescue_strategy,rescue_percent,distance_to_normal,distance_hyper_to_normal
+mechanosensor,Mechanical stimuli & its receptors,1,PIEZO1↓,5.526597393155406,2.827512950454446,2.992919565119583
+mechanosensor,Mechanical stimuli & its receptors,2,SOX9↑ + PIEZO1↓,5.526597393155406,2.827512950454446,2.992919565119583
+mechanosensor,Mechanical stimuli & its receptors,3,PPARγ↑ + PIEZO1↓,5.526597393155406,2.827512950454446,2.992919565119583
+mechanosensor,Mechanical stimuli & its receptors,4,HIF-1α↑ + PIEZO1↓,5.526597393155406,2.827512950454446,2.992919565119583
+mechanosensor,Mechanical stimuli & its receptors,5,NRF2↑ + PIEZO1↓,5.526597393155406,2.827512950454446,2.992919565119583
+mechanosensor,Mechanical stimuli & its receptors,6,IκBα↑ + PIEZO1↓,5.526597393155406,2.827512950454446,2.992919565119583
+mechanosensor,Mechanical stimuli & its receptors,7,RhoA-E↓,-1.4837993477192527e-14,2.9929195651195832,2.992919565119583
+mechanosensor,Mechanical stimuli & its receptors,8,PI3K-E↓,-1.4837993477192527e-14,2.9929195651195832,2.992919565119583
+mechanosensor,Mechanical stimuli & its receptors,9,FAK-E↓,-1.4837993477192527e-14,2.9929195651195832,2.992919565119583
+mechanosensor,Mechanical stimuli & its receptors,10,ROS↓,-1.4837993477192527e-14,2.9929195651195832,2.992919565119583
+mechanosensor,Mechanical stimuli & its receptors,11,SOX9↑,-1.4837993477192527e-14,2.9929195651195832,2.992919565119583
+mechanosensor,Mechanical stimuli & its receptors,12,PPARγ↑,-1.4837993477192527e-14,2.9929195651195832,2.992919565119583
+mechanosensor,Mechanical stimuli & its receptors,13,HIF-1α↑,-1.4837993477192527e-14,2.9929195651195832,2.992919565119583
+mechanosensor,Mechanical stimuli & its receptors,14,NRF2↑,-1.4837993477192527e-14,2.9929195651195832,2.992919565119583
+mechanosensor,Mechanical stimuli & its receptors,15,IκBα↑,-1.4837993477192527e-14,2.9929195651195832,2.992919565119583
+mechanosensor,Mechanical stimuli & its receptors,16,SOX9↑ + RhoA-E↓,-1.4837993477192527e-14,2.9929195651195832,2.992919565119583
+mechanosensor,Mechanical stimuli & its receptors,17,SOX9↑ + PI3K-E↓,-1.4837993477192527e-14,2.9929195651195832,2.992919565119583
+mechanosensor,Mechanical stimuli & its receptors,18,SOX9↑ + FAK-E↓,-1.4837993477192527e-14,2.9929195651195832,2.992919565119583
+mechanosensor,Mechanical stimuli & its receptors,19,SOX9↑ + ROS↓,-1.4837993477192527e-14,2.9929195651195832,2.992919565119583
+mechanosensor,Mechanical stimuli & its receptors,20,PPARγ↑ + RhoA-E↓,-1.4837993477192527e-14,2.9929195651195832,2.992919565119583
+ion_channel,Ion channels & related,1,NRF2↑ + FAK-E↓,16.094119638887793,2.5891259047335997,3.0857502401388066
+ion_channel,Ion channels & related,2,NRF2↑ + PI3K-E↓,16.008230026305707,2.5917762436601057,3.0857502401388066
+ion_channel,Ion channels & related,3,PPARγ↑ + ROS↓,16.007490823657513,2.5917990536075974,3.0857502401388066
+ion_channel,Ion channels & related,4,NRF2↑ + PIEZO1↓,12.04313137258769,2.71412928488895,3.0857502401388066
+ion_channel,Ion channels & related,5,PPARγ↑ + PIEZO1↓,8.376269725395229,2.827279476972749,3.0857502401388066
+ion_channel,Ion channels & related,6,SOX9↑ + ROS↓,7.396253682584449,2.8575203243671816,3.0857502401388066
+ion_channel,Ion channels & related,7,IκBα↑ + ROS↓,7.3962434123130745,2.8575206412821053,3.0857502401388066
+ion_channel,Ion channels & related,8,NRF2↑,7.395844294992408,2.857532957045786,3.0857502401388066
+ion_channel,Ion channels & related,9,NRF2↑ + ROS↓,7.395844294992408,2.857532957045786,3.0857502401388066
+ion_channel,Ion channels & related,10,NRF2↑ + RhoA-E↓,7.395844294990451,2.8575329570458465,3.0857502401388066
+ion_channel,Ion channels & related,11,ROS↓,7.395842055384978,2.857533026154478,3.0857502401388066
+ion_channel,Ion channels & related,12,HIF-1α↑ + ROS↓,7.395830574403793,2.8575333804288823,3.0857502401388066
+ion_channel,Ion channels & related,13,HIF-1α↑ + PIEZO1↓,4.151102914137236,2.957657571997408,3.0857502401388066
+ion_channel,Ion channels & related,14,SOX9↑ + PIEZO1↓,4.149348667916,2.9577117036543923,3.0857502401388066
+ion_channel,Ion channels & related,15,IκBα↑ + PIEZO1↓,4.149275813982596,2.957713951744817,3.0857502401388066
+ion_channel,Ion channels & related,16,PIEZO1↓,4.148891341964782,2.95772581559103,3.0857502401388066
+ion_channel,Ion channels & related,17,HIF-1α↑ + FAK-E↓,3.982810885951855,2.9628506436612727,3.0857502401388066
+ion_channel,Ion channels & related,18,FAK-E↓,3.974153019387445,2.963117803799575,3.0857502401388066
+ion_channel,Ion channels & related,19,IκBα↑ + FAK-E↓,3.9741484572120633,2.9631179445769127,3.0857502401388066
+ion_channel,Ion channels & related,20,SOX9↑ + FAK-E↓,3.9741478726032002,2.963117962616482,3.0857502401388066
+rho_cytoskeletal,"Rho GTPases, cytoskeletal & Hippo regulators",1,FAK-E↓,20.440860160842135,2.6412436368985848,3.3198494129502927
+rho_cytoskeletal,"Rho GTPases, cytoskeletal & Hippo regulators",2,SOX9↑ + FAK-E↓,20.440860160842135,2.6412436368985848,3.3198494129502927
+rho_cytoskeletal,"Rho GTPases, cytoskeletal & Hippo regulators",3,PPARγ↑ + FAK-E↓,20.440860160842135,2.6412436368985848,3.3198494129502927
+rho_cytoskeletal,"Rho GTPases, cytoskeletal & Hippo regulators",4,HIF-1α↑ + FAK-E↓,20.440860160842135,2.6412436368985848,3.3198494129502927
+rho_cytoskeletal,"Rho GTPases, cytoskeletal & Hippo regulators",5,NRF2↑ + FAK-E↓,20.440860160842135,2.6412436368985848,3.3198494129502927
+rho_cytoskeletal,"Rho GTPases, cytoskeletal & Hippo regulators",6,IκBα↑ + FAK-E↓,20.440860160842135,2.6412436368985848,3.3198494129502927
+rho_cytoskeletal,"Rho GTPases, cytoskeletal & Hippo regulators",7,RhoA-E↓,14.688437480824614,2.832215407471566,3.3198494129502927
+rho_cytoskeletal,"Rho GTPases, cytoskeletal & Hippo regulators",8,SOX9↑ + RhoA-E↓,14.688437480824614,2.832215407471566,3.3198494129502927
+rho_cytoskeletal,"Rho GTPases, cytoskeletal & Hippo regulators",9,PPARγ↑ + RhoA-E↓,14.688437480824614,2.832215407471566,3.3198494129502927
+rho_cytoskeletal,"Rho GTPases, cytoskeletal & Hippo regulators",10,HIF-1α↑ + RhoA-E↓,14.688437480824614,2.832215407471566,3.3198494129502927
+rho_cytoskeletal,"Rho GTPases, cytoskeletal & Hippo regulators",11,NRF2↑ + RhoA-E↓,14.688437480824614,2.832215407471566,3.3198494129502927
+rho_cytoskeletal,"Rho GTPases, cytoskeletal & Hippo regulators",12,IκBα↑ + RhoA-E↓,14.688437480824614,2.832215407471566,3.3198494129502927
+rho_cytoskeletal,"Rho GTPases, cytoskeletal & Hippo regulators",13,PIEZO1↓,0.0,3.3198494129502927,3.3198494129502927
+rho_cytoskeletal,"Rho GTPases, cytoskeletal & Hippo regulators",14,PI3K-E↓,0.0,3.3198494129502927,3.3198494129502927
+rho_cytoskeletal,"Rho GTPases, cytoskeletal & Hippo regulators",15,ROS↓,0.0,3.3198494129502927,3.3198494129502927
+rho_cytoskeletal,"Rho GTPases, cytoskeletal & Hippo regulators",16,SOX9↑,0.0,3.3198494129502927,3.3198494129502927
+rho_cytoskeletal,"Rho GTPases, cytoskeletal & Hippo regulators",17,PPARγ↑,0.0,3.3198494129502927,3.3198494129502927
+rho_cytoskeletal,"Rho GTPases, cytoskeletal & Hippo regulators",18,HIF-1α↑,0.0,3.3198494129502927,3.3198494129502927
+rho_cytoskeletal,"Rho GTPases, cytoskeletal & Hippo regulators",19,NRF2↑,0.0,3.3198494129502927,3.3198494129502927
+rho_cytoskeletal,"Rho GTPases, cytoskeletal & Hippo regulators",20,IκBα↑,0.0,3.3198494129502927,3.3198494129502927
+mapk,MAPK & stress-activated kinases,1,NRF2↑ + FAK-E↓,18.659709029961128,3.037829277790825,3.7347165120294297
+mapk,MAPK & stress-activated kinases,2,PPARγ↑ + FAK-E↓,16.208797681974428,3.1293638685992873,3.7347165120294297
+mapk,MAPK & stress-activated kinases,3,SOX9↑ + FAK-E↓,16.20879745009695,3.129363877259254,3.7347165120294297
+mapk,MAPK & stress-activated kinases,4,IκBα↑ + FAK-E↓,16.208797444679387,3.1293638774615844,3.7347165120294297
+mapk,MAPK & stress-activated kinases,5,HIF-1α↑ + FAK-E↓,16.20879740198105,3.129363879056246,3.7347165120294297
+mapk,MAPK & stress-activated kinases,6,FAK-E↓,16.208797401980945,3.12936387905625,3.7347165120294297
+mapk,MAPK & stress-activated kinases,7,NRF2↑ + PIEZO1↓,4.871521477346372,3.5527789950279147,3.7347165120294297
+mapk,MAPK & stress-activated kinases,8,PPARγ↑ + PIEZO1↓,4.217698052996624,3.577197446416621,3.7347165120294297
+mapk,MAPK & stress-activated kinases,9,SOX9↑ + PIEZO1↓,4.21616784055154,3.5772545955134767,3.7347165120294297
+mapk,MAPK & stress-activated kinases,10,IκBα↑ + PIEZO1↓,4.216167773659113,3.577254598011719,3.7347165120294297
+mapk,MAPK & stress-activated kinases,11,HIF-1α↑ + PIEZO1↓,4.216167426566932,3.577254610974628,3.7347165120294297
+mapk,MAPK & stress-activated kinases,12,PIEZO1↓,4.2161674265651845,3.5772546109746934,3.7347165120294297
+mapk,MAPK & stress-activated kinases,13,NRF2↑ + PI3K-E↓,0.7134003187341101,3.7080730325287963,3.7347165120294297
+mapk,MAPK & stress-activated kinases,14,PPARγ↑ + ROS↓,0.713334339442882,3.7080754966682803,3.7347165120294297
+mapk,MAPK & stress-activated kinases,15,SOX9↑ + ROS↓,0.5755183507386874,3.7132225331546325,3.7347165120294297
+mapk,MAPK & stress-activated kinases,16,IκBα↑ + ROS↓,0.5755182738216514,3.7132225360272657,3.7347165120294297
+mapk,MAPK & stress-activated kinases,17,NRF2↑,0.5755152665312147,3.713222648341038,3.7347165120294297
+mapk,MAPK & stress-activated kinases,18,NRF2↑ + ROS↓,0.5755152665312147,3.713222648341038,3.7347165120294297
+mapk,MAPK & stress-activated kinases,19,NRF2↑ + RhoA-E↓,0.5755152665312028,3.7132226483410387,3.7347165120294297
+mapk,MAPK & stress-activated kinases,20,HIF-1α↑ + ROS↓,0.5755152650681061,3.713222648395681,3.7347165120294297
+metabolic,Metabolic & related,1,NRF2↑ + FAK-E↓,32.45191240552083,2.588307004517388,3.8317990881638746
+metabolic,Metabolic & related,2,NRF2↑ + PI3K-E↓,27.809003413684906,2.7662139489308357,3.8317990881638746
+metabolic,Metabolic & related,3,PPARγ↑ + ROS↓,25.579372459136454,2.8516489275166426,3.8317990881638746
+metabolic,Metabolic & related,4,HIF-1α↑ + FAK-E↓,21.2289364925288,3.018348893216268,3.8317990881638746
+metabolic,Metabolic & related,5,PPARγ↑ + FAK-E↓,18.7943953996963,3.1116356166123986,3.8317990881638746
+metabolic,Metabolic & related,6,NRF2↑ + PIEZO1↓,17.1441282985192,3.174870536347571,3.8317990881638746
+metabolic,Metabolic & related,7,NRF2↑,17.10962583419723,3.1761926014608544,3.8317990881638746
+metabolic,Metabolic & related,8,NRF2↑ + ROS↓,17.10962583419723,3.1761926014608544,3.8317990881638746
+metabolic,Metabolic & related,9,NRF2↑ + RhoA-E↓,17.10960561402003,3.17619337625742,3.8317990881638746
+metabolic,Metabolic & related,10,IκBα↑ + FAK-E↓,16.803419314362728,3.187925820095771,3.8317990881638746
+metabolic,Metabolic & related,11,SOX9↑ + FAK-E↓,16.761878237069002,3.1895175907167257,3.8317990881638746
+metabolic,Metabolic & related,12,PPARγ↑ + PI3K-E↓,16.52726633685399,3.1985074473698885,3.8317990881638746
+metabolic,Metabolic & related,13,FAK-E↓,16.232641496123655,3.2097968793304976,3.8317990881638746
+metabolic,Metabolic & related,14,HIF-1α↑ + PI3K-E↓,14.818834733178347,3.263971113981435,3.8317990881638746
+metabolic,Metabolic & related,15,SOX9↑ + ROS↓,12.805672705575507,3.341111438198382,3.8317990881638746
+metabolic,Metabolic & related,16,PPARγ↑ + PIEZO1↓,12.802149365620568,3.3412464455066484,3.8317990881638746
+metabolic,Metabolic & related,17,IκBα↑ + ROS↓,12.801673611097604,3.3412646754641213,3.8317990881638746
+metabolic,Metabolic & related,18,HIF-1α↑ + ROS↓,12.617183652673846,3.3483339600087567,3.8317990881638746
+metabolic,Metabolic & related,19,ROS↓,12.617135569094483,3.3483358024749124,3.8317990881638746
+metabolic,Metabolic & related,20,PPARγ↑ + RhoA-E↓,12.547566735629342,3.351001540401276,3.8317990881638746
+oxidative_proteostasis,Oxidative-stress defense & proteostasis,1,NRF2↑ + PIEZO1↓,53.71787723091359,0.8913584627084087,1.925923897561114
+oxidative_proteostasis,Oxidative-stress defense & proteostasis,2,NRF2↑ + RhoA-E↓,53.714794934566434,0.8914178253903521,1.925923897561114
+oxidative_proteostasis,Oxidative-stress defense & proteostasis,3,NRF2↑,53.71479492421921,0.8914178255896318,1.925923897561114
+oxidative_proteostasis,Oxidative-stress defense & proteostasis,4,NRF2↑ + ROS↓,53.71479492421921,0.8914178255896318,1.925923897561114
+oxidative_proteostasis,Oxidative-stress defense & proteostasis,5,NRF2↑ + PI3K-E↓,53.645647168614275,0.8927495587394546,1.925923897561114
+oxidative_proteostasis,Oxidative-stress defense & proteostasis,6,NRF2↑ + FAK-E↓,52.4431871146808,0.9159080242767853,1.925923897561114
+oxidative_proteostasis,Oxidative-stress defense & proteostasis,7,HIF-1α↑ + FAK-E↓,32.5908933324788,1.298248094442253,1.925923897561114
+oxidative_proteostasis,Oxidative-stress defense & proteostasis,8,PPARγ↑ + ROS↓,28.445648804648574,1.3780823494160797,1.925923897561114
+oxidative_proteostasis,Oxidative-stress defense & proteostasis,9,HIF-1α↑ + ROS↓,28.10636367315451,1.3846167228443955,1.925923897561114
+oxidative_proteostasis,Oxidative-stress defense & proteostasis,10,SOX9↑ + ROS↓,28.106069117869964,1.3846223957550121,1.925923897561114
+oxidative_proteostasis,Oxidative-stress defense & proteostasis,11,IκBα↑ + ROS↓,28.10606818145823,1.3846224137895895,1.925923897561114
+oxidative_proteostasis,Oxidative-stress defense & proteostasis,12,ROS↓,28.106040003521038,1.3846229564752157,1.925923897561114
+oxidative_proteostasis,Oxidative-stress defense & proteostasis,13,FAK-E↓,22.16448212784279,1.4990528394903275,1.925923897561114
+oxidative_proteostasis,Oxidative-stress defense & proteostasis,14,IκBα↑ + FAK-E↓,22.164373697552794,1.4990549277751948,1.925923897561114
+oxidative_proteostasis,Oxidative-stress defense & proteostasis,15,SOX9↑ + FAK-E↓,22.164363189068148,1.4990551301606119,1.925923897561114
+oxidative_proteostasis,Oxidative-stress defense & proteostasis,16,PPARγ↑ + FAK-E↓,22.16366320778005,1.4990686112675178,1.925923897561114
+oxidative_proteostasis,Oxidative-stress defense & proteostasis,17,HIF-1α↑ + PI3K-E↓,8.184116666864718,1.7683040388696842,1.925923897561114
+oxidative_proteostasis,Oxidative-stress defense & proteostasis,18,HIF-1α↑ + RhoA-E↓,8.134206305675706,1.7692652744431825,1.925923897561114
+oxidative_proteostasis,Oxidative-stress defense & proteostasis,19,HIF-1α↑,7.881581261614212,1.774130640537987,1.925923897561114
+oxidative_proteostasis,Oxidative-stress defense & proteostasis,20,HIF-1α↑ + PIEZO1↓,7.876387436676876,1.7742306696536527,1.925923897561114
+transcription_factor,Transcription Factors,1,SOX9↑ + ROS↓,32.538574723635946,2.2235229955104066,3.2959917262368386
+transcription_factor,Transcription Factors,2,PPARγ↑ + ROS↓,24.982635949246266,2.4725661123538116,3.2959917262368386
+transcription_factor,Transcription Factors,3,IκBα↑ + ROS↓,19.517753295294103,2.652688192476627,3.2959917262368386
+transcription_factor,Transcription Factors,4,SOX9↑ + PIEZO1↓,17.05413211618381,2.7338889427059208,3.2959917262368386
+transcription_factor,Transcription Factors,5,SOX9↑ + PI3K-E↓,15.162085666062854,2.7962506371584652,3.2959917262368386
+transcription_factor,Transcription Factors,6,SOX9↑,14.842661498078053,2.806778831306845,3.2959917262368386
+transcription_factor,Transcription Factors,7,NRF2↑ + PIEZO1↓,14.83341107515227,2.807083724481121,3.2959917262368386
+transcription_factor,Transcription Factors,8,ROS↓,14.576181895419376,2.815561976962584,3.2959917262368386
+transcription_factor,Transcription Factors,9,HIF-1α↑ + ROS↓,14.565259832435625,2.8159219672548628,3.2959917262368386
+transcription_factor,Transcription Factors,10,SOX9↑ + FAK-E↓,13.367835204553666,2.8553889839177744,3.2959917262368386
+transcription_factor,Transcription Factors,11,NRF2↑ + PI3K-E↓,12.962132819327186,2.8687609009679846,3.2959917262368386
+transcription_factor,Transcription Factors,12,NRF2↑,12.621577336490285,2.879985581505535,3.2959917262368386
+transcription_factor,Transcription Factors,13,NRF2↑ + ROS↓,12.621577336490285,2.879985581505535,3.2959917262368386
+transcription_factor,Transcription Factors,14,NRF2↑ + FAK-E↓,11.274683969951695,2.9243790754278796,3.2959917262368386
+transcription_factor,Transcription Factors,15,PPARγ↑ + PIEZO1↓,10.768517105544072,2.9410622933997073,3.2959917262368386
+transcription_factor,Transcription Factors,16,SOX9↑ + RhoA-E↓,10.730304294814824,2.942321784479706,3.2959917262368386
+transcription_factor,Transcription Factors,17,PPARγ↑ + PI3K-E↓,8.697526313042527,3.009321978571685,3.2959917262368386
+transcription_factor,Transcription Factors,18,PPARγ↑,8.697418080300654,3.009325545913902,3.2959917262368386
+transcription_factor,Transcription Factors,19,NRF2↑ + RhoA-E↓,8.61257128545827,3.0121220892518843,3.2959917262368386
+transcription_factor,Transcription Factors,20,PPARγ↑ + FAK-E↓,8.38614193982529,3.0195851817497195,3.2959917262368386
+growth_factor,Growth factors,1,SOX9↑ + FAK-E↓,31.39750842631608,1.7909751346747205,2.610656105326855
+growth_factor,Growth factors,2,SOX9↑ + RhoA-E↓,22.3101795965116,2.0282140395811386,2.610656105326855
+growth_factor,Growth factors,3,SOX9↑ + PIEZO1↓,20.748322053574555,2.0689887688823325,2.610656105326855
+growth_factor,Growth factors,4,SOX9↑ + PI3K-E↓,20.719137196459783,2.0697506851364302,2.610656105326855
+growth_factor,Growth factors,5,SOX9↑,20.57101324471378,2.0736176921261387,2.610656105326855
+growth_factor,Growth factors,6,IκBα↑ + RhoA-E↓,19.590599560677127,2.0992129218259015,2.610656105326855
+growth_factor,Growth factors,7,SOX9↑ + ROS↓,19.494891930280165,2.1017115189221234,2.610656105326855
+growth_factor,Growth factors,8,IκBα↑ + FAK-E↓,18.029955902294027,2.1399559607758762,2.610656105326855
+growth_factor,Growth factors,9,IκBα↑ + PI3K-E↓,14.874040567045798,2.2223460571544806,2.610656105326855
+growth_factor,Growth factors,10,IκBα↑ + PIEZO1↓,14.086737306858211,2.2428998377840053,2.610656105326855
+growth_factor,Growth factors,11,IκBα↑,14.040516962103652,2.2441064920362432,2.610656105326855
+growth_factor,Growth factors,12,PPARγ↑ + FAK-E↓,11.108449992521743,2.3206526773899054,2.610656105326855
+growth_factor,Growth factors,13,IκBα↑ + ROS↓,8.592656857695504,2.3863313844616405,2.610656105326855
+growth_factor,Growth factors,14,PPARγ↑ + PIEZO1↓,7.743226941459837,2.4085070784303197,2.610656105326855
+growth_factor,Growth factors,15,PPARγ↑ + PI3K-E↓,7.709214081251431,2.409395037241947,2.610656105326855
+growth_factor,Growth factors,16,PPARγ↑,7.709147848396079,2.4093967663540288,2.610656105326855
+growth_factor,Growth factors,17,PPARγ↑ + RhoA-E↓,4.538386760442609,2.4921744342820142,2.610656105326855
+growth_factor,Growth factors,18,NRF2↑ + FAK-E↓,3.824117601534006,2.5108215456875285,2.610656105326855
+growth_factor,Growth factors,19,FAK-E↓,3.175345814453017,2.5277587459565964,2.610656105326855
+growth_factor,Growth factors,20,HIF-1α↑ + FAK-E↓,2.9736003443972843,2.533025626387827,2.610656105326855
+ecm_matrix,ECM anabolism & phenotype markers,1,SOX9↑ + FAK-E↓,90.03929764744116,0.20659744117928364,2.0741252360202314
+ecm_matrix,ECM anabolism & phenotype markers,2,SOX9↑ + ROS↓,85.91350986146654,0.29217144683282403,2.0741252360202314
+ecm_matrix,ECM anabolism & phenotype markers,3,SOX9↑ + PI3K-E↓,83.34035192274982,0.3455419650024055,2.0741252360202314
+ecm_matrix,ECM anabolism & phenotype markers,4,SOX9↑ + RhoA-E↓,82.68991439536835,0.35903285390237016,2.0741252360202314
+ecm_matrix,ECM anabolism & phenotype markers,5,SOX9↑ + PIEZO1↓,82.65636061177003,0.35972880139562285,2.0741252360202314
+ecm_matrix,ECM anabolism & phenotype markers,6,SOX9↑,82.52884029889066,0.36237373238610554,2.0741252360202314
+ecm_matrix,ECM anabolism & phenotype markers,7,PPARγ↑ + ROS↓,53.34118116856769,0.9677623362116976,2.0741252360202314
+ecm_matrix,ECM anabolism & phenotype markers,8,PPARγ↑ + FAK-E↓,52.51865936735701,0.9848224684623764,2.0741252360202314
+ecm_matrix,ECM anabolism & phenotype markers,9,PPARγ↑ + PIEZO1↓,49.67135061617087,1.0438792178181406,2.0741252360202314
+ecm_matrix,ECM anabolism & phenotype markers,10,PPARγ↑ + RhoA-E↓,49.57962696582525,1.0457816811973581,2.0741252360202314
+ecm_matrix,ECM anabolism & phenotype markers,11,PPARγ↑ + PI3K-E↓,49.5199831258993,1.0470187691329937,2.0741252360202314
+ecm_matrix,ECM anabolism & phenotype markers,12,PPARγ↑,49.5198864958863,1.047020773360479,2.0741252360202314
+ecm_matrix,ECM anabolism & phenotype markers,13,NRF2↑ + FAK-E↓,25.877863113061146,1.5373859466494595,2.0741252360202314
+ecm_matrix,ECM anabolism & phenotype markers,14,NRF2↑ + RhoA-E↓,22.421043570760208,1.6090847131400023,2.0741252360202314
+ecm_matrix,ECM anabolism & phenotype markers,15,HIF-1α↑ + FAK-E↓,21.1990488497193,1.6344304140319468,2.0741252360202314
+ecm_matrix,ECM anabolism & phenotype markers,16,HIF-1α↑ + RhoA-E↓,20.27814454841588,1.6535311225448768,2.0741252360202314
+ecm_matrix,ECM anabolism & phenotype markers,17,IκBα↑ + ROS↓,18.483902874158307,1.690745941905845,2.0741252360202314
+ecm_matrix,ECM anabolism & phenotype markers,18,NRF2↑ + PIEZO1↓,18.321393916622586,1.6941165812048868,2.0741252360202314
+ecm_matrix,ECM anabolism & phenotype markers,19,HIF-1α↑ + ROS↓,18.277773683900698,1.6950213194597823,2.0741252360202314
+ecm_matrix,ECM anabolism & phenotype markers,20,NRF2↑ + PI3K-E↓,18.25778367459743,1.6954359372874241,2.0741252360202314
+cytokines_chemokines_proteases,"Cytokines, chemokines, proteases & others",1,SOX9↑ + FAK-E↓,22.055982073414583,2.582231697247645,3.312931211321207
+cytokines_chemokines_proteases,"Cytokines, chemokines, proteases & others",2,PPARγ↑ + FAK-E↓,20.725213023224264,2.626319160462003,3.312931211321207
+cytokines_chemokines_proteases,"Cytokines, chemokines, proteases & others",3,SOX9↑ + RhoA-E↓,20.567253225923245,2.631552259888128,3.312931211321207
+cytokines_chemokines_proteases,"Cytokines, chemokines, proteases & others",4,PPARγ↑ + RhoA-E↓,20.05859249231547,2.6484038400915555,3.312931211321207
+cytokines_chemokines_proteases,"Cytokines, chemokines, proteases & others",5,SOX9↑ + ROS↓,18.473054119230248,2.7009316357209703,3.312931211321207
+cytokines_chemokines_proteases,"Cytokines, chemokines, proteases & others",6,SOX9↑ + PIEZO1↓,18.4437888256275,2.7019011747668205,3.312931211321207
+cytokines_chemokines_proteases,"Cytokines, chemokines, proteases & others",7,PPARγ↑ + ROS↓,18.16518552750676,2.7111311103860327,3.312931211321207
+cytokines_chemokines_proteases,"Cytokines, chemokines, proteases & others",8,PPARγ↑ + PIEZO1↓,18.074287352747294,2.7141425043881604,3.312931211321207
+cytokines_chemokines_proteases,"Cytokines, chemokines, proteases & others",9,SOX9↑ + PI3K-E↓,17.78146512839316,2.7238435032524735,3.312931211321207
+cytokines_chemokines_proteases,"Cytokines, chemokines, proteases & others",10,SOX9↑,17.781451849802078,2.723843943163062,3.312931211321207
+cytokines_chemokines_proteases,"Cytokines, chemokines, proteases & others",11,PPARγ↑ + PI3K-E↓,17.500539772705064,2.7331503670415795,3.312931211321207
+cytokines_chemokines_proteases,"Cytokines, chemokines, proteases & others",12,PPARγ↑,17.500539726869214,2.7331503685600897,3.312931211321207
+cytokines_chemokines_proteases,"Cytokines, chemokines, proteases & others",13,IκBα↑ + FAK-E↓,10.514802336951675,2.9645830428916033,3.312931211321207
+cytokines_chemokines_proteases,"Cytokines, chemokines, proteases & others",14,IκBα↑ + RhoA-E↓,8.801891169119743,3.021330611592914,3.312931211321207
+cytokines_chemokines_proteases,"Cytokines, chemokines, proteases & others",15,IκBα↑ + PIEZO1↓,3.956868166209731,3.1818428908520118,3.312931211321207
+cytokines_chemokines_proteases,"Cytokines, chemokines, proteases & others",16,IκBα↑ + ROS↓,3.725910954831057,3.189494344392573,3.312931211321207
+cytokines_chemokines_proteases,"Cytokines, chemokines, proteases & others",17,IκBα↑ + PI3K-E↓,3.5042086347705763,3.19683918975008,3.312931211321207
+cytokines_chemokines_proteases,"Cytokines, chemokines, proteases & others",18,IκBα↑,3.504195222911386,3.196839634075749,3.312931211321207
+cytokines_chemokines_proteases,"Cytokines, chemokines, proteases & others",19,NRF2↑ + FAK-E↓,0.9820386667879426,3.2803969458219466,3.312931211321207
+cytokines_chemokines_proteases,"Cytokines, chemokines, proteases & others",20,NRF2↑ + RhoA-E↓,0.7292122220082587,3.2887729120215266,3.312931211321207
+cell_fate,"Cell survival, apoptosis & mitophagy/DNA-damage",1,PPARγ↑ + ROS↓,38.9960328997965,1.3510074525277977,2.2146222889220772
+cell_fate,"Cell survival, apoptosis & mitophagy/DNA-damage",2,SOX9↑ + ROS↓,38.27970330958267,1.3668714472948174,2.2146222889220772
+cell_fate,"Cell survival, apoptosis & mitophagy/DNA-damage",3,ROS↓,38.2796608349283,1.36687238794798,2.2146222889220772
+cell_fate,"Cell survival, apoptosis & mitophagy/DNA-damage",4,HIF-1α↑ + ROS↓,38.278704748895635,1.3668935616423608,2.2146222889220772
+cell_fate,"Cell survival, apoptosis & mitophagy/DNA-damage",5,NRF2↑ + PIEZO1↓,37.20090638587609,1.390762724419429,2.2146222889220772
+cell_fate,"Cell survival, apoptosis & mitophagy/DNA-damage",6,NRF2↑ + PI3K-E↓,33.143297785725075,1.4806234288755924,2.2146222889220772
+cell_fate,"Cell survival, apoptosis & mitophagy/DNA-damage",7,NRF2↑ + FAK-E↓,32.92597293951062,1.4854363533592234,2.2146222889220772
+cell_fate,"Cell survival, apoptosis & mitophagy/DNA-damage",8,NRF2↑ + RhoA-E↓,32.49016110410609,1.4950879394038525,2.2146222889220772
+cell_fate,"Cell survival, apoptosis & mitophagy/DNA-damage",9,NRF2↑,32.49016110409586,1.495087939404079,2.2146222889220772
+cell_fate,"Cell survival, apoptosis & mitophagy/DNA-damage",10,NRF2↑ + ROS↓,32.49016110409586,1.495087939404079,2.2146222889220772
+cell_fate,"Cell survival, apoptosis & mitophagy/DNA-damage",11,IκBα↑ + ROS↓,26.998043281395457,1.616717604839464,2.2146222889220772
+cell_fate,"Cell survival, apoptosis & mitophagy/DNA-damage",12,HIF-1α↑ + PIEZO1↓,7.277952872220788,2.053443122436631,2.2146222889220772
+cell_fate,"Cell survival, apoptosis & mitophagy/DNA-damage",13,HIF-1α↑ + RhoA-E↓,3.822090185391576,2.1299774277736923,2.2146222889220772
+cell_fate,"Cell survival, apoptosis & mitophagy/DNA-damage",14,HIF-1α↑,3.812787225247118,2.130183453202581,2.2146222889220772
+cell_fate,"Cell survival, apoptosis & mitophagy/DNA-damage",15,HIF-1α↑ + PI3K-E↓,3.8006357423948045,2.130452562650263,2.2146222889220772
+cell_fate,"Cell survival, apoptosis & mitophagy/DNA-damage",16,HIF-1α↑ + FAK-E↓,3.6756741850526935,2.1332199891517454,2.2146222889220772
+cell_fate,"Cell survival, apoptosis & mitophagy/DNA-damage",17,SOX9↑ + PIEZO1↓,3.3286252714247815,2.140905811746411,2.2146222889220772
+cell_fate,"Cell survival, apoptosis & mitophagy/DNA-damage",18,PIEZO1↓,3.3283991861254423,2.140910818681842,2.2146222889220772
+cell_fate,"Cell survival, apoptosis & mitophagy/DNA-damage",19,PPARγ↑ + PIEZO1↓,3.319477982110665,2.1411083896543937,2.2146222889220772
+cell_fate,"Cell survival, apoptosis & mitophagy/DNA-damage",20,IκBα↑ + FAK-E↓,0.01156235394080867,2.21436622645458,2.2146222889220772

@@ -1,24 +1,41 @@
-%% NP_MorPerturb_From_Hyper_ALLINONE_PAIRED_PARALLEL_v3_3INPUT.m
-% Three-regime baseline simulation using mutually exclusive clamped inputs:
-%   Hypo, NL, HL
+%% RESCUE_NEW4_1_combined.m
+% Hyper-to-Normal perturbation analysis with integrated rescue ranking plots.
 %
-% Regime logic:
-%   Hypo loading   = Hypo high, NL low, HL very low
-%   Normal loading = Hypo very low, NL high, HL very low
-%   Hyper loading  = Hypo very low, NL low, HL high
+% This reproducible all-in-one workflow:
+%   1. Simulates Hypo, Normal, and Hyper baseline steady states.
+%   2. Starts every perturbation replicate from its paired Hyper state.
+%   3. Computes replicate-wise perturbation statistics and FDR correction.
+%   4. Saves baseline, final-state, sensitivity, and marker-statistics tables.
+%   5. Generates the original global and group-specific figures.
+%   6. Ranks and plots the Top-N TRUE Hyper -> Normal rescue strategies for
+%      every biological group, including 600-dpi PNG and vector PDF output.
 %
-% Perturbations start from the Hyper steady state.
+% Regime logic (mutually exclusive chronic loading inputs):
+%   Hypo loading   = Hypo high,     NL low,      HL very low
+%   Normal loading = Hypo very low, NL high,     HL very low
+%   Hyper loading  = Hypo very low, NL low,      HL high
 %
-% PAIRED-SEQUENTIAL VERSION:
-% For each replicate r:
-%   random initial -> Hyper steady state -> Perturbed steady state
+% Paired-sequential perturbation design, replicate r:
+%   random initial state -> Hyper steady state -> Perturbed steady state
 %
-% Delta is computed replicate-wise:
+% Replicate-wise response:
 %   Delta_r = Perturbed_r - Hyper_r
 %
-% Parallelization:
-%   - parpool starts workers
-%   - parfor distributes independent replicates across workers
+% TRUE rescue metric for a biological group:
+%   RescuePercent = 100 * (D_Hyper - D_Rescue) / D_Hyper
+% where D_Hyper is the Euclidean distance from the Hyper group profile to
+% Normal, and D_Rescue is the corresponding distance after perturbation.
+% Interpretation: 100% = reaches Normal; 0% = no improvement; <0% = worse.
+%
+% Required project dependencies on the MATLAB path / working directory:
+%   - MT_PRIMARY4_1.xlsx
+%   - CreateMatrices_new.m
+%   - ODESysFunS.m
+%
+% Reproducibility:
+%   - Baseline initial conditions and permutation tests use deterministic seeds.
+%   - Set USE_PARALLEL = false to run without a parallel pool.
+%   - All generated figures are saved without interactive display.
 
 clc; close all; clear;
 
@@ -51,7 +68,7 @@ USE_PARALLEL = true;
 N_WORKERS    = [];   % [] = MATLAB default
 
 if USE_PARALLEL
-    ensure_parpool(N_WORKERS);
+    USE_PARALLEL = ensure_parpool(N_WORKERS);
 end
 
 %% --------------- I/O & model --------------------------------------------
@@ -59,6 +76,14 @@ netfile  = 'MT_PRIMARY4_1.xlsx';
 ODIR     = fullfile(pwd,'outputs_RESCUER_NEW4_1','HyperToNormal');  ensure_dir(ODIR);
 FDIR     = fullfile(ODIR,'Figures_HyperToNormal');                ensure_dir(FDIR);
 OUT_XLSX = fullfile(ODIR,'Sensitivity_FromHyper4_1.xlsx');
+
+if ~isfile(netfile)
+    error('Network input file not found: %s', netfile);
+end
+assert(exist('CreateMatrices_new','file') == 2, ...
+    'Required function CreateMatrices_new.m is not on the MATLAB path.');
+assert(exist('ODESysFunS','file') == 2, ...
+    'Required function ODESysFunS.m is not on the MATLAB path.');
 
 [Mact, Minh, NodeNames, NumOfNodes] = CreateMatrices_new(netfile);
 NodeNames = string(NodeNames(:));
@@ -76,7 +101,8 @@ catch
 end
 solver_handle = @ode45;
 
-BASE_SEED = 1;
+BASE_SEED        = 1;
+PERMUTATION_SEED = BASE_SEED + 4000;
 
 %% --------------- Baseline clamps & windows -------------------------------
 % Use the same three-input chronic loading regime scheme as the baseline code
@@ -90,6 +116,10 @@ tspan_pert     = [0 100];
 N_REP_BASE = 100;
 N_PERM     = 1000;
 ALPHA_Q    = 0.05;
+
+% Integrated TRUE-rescue ranking/figure settings.
+N_TOP_TRUE_RESCUE    = 20;
+NORMAL_REF_THRESHOLD = 80;  % Show the 100% reference when best rescue >= 80%.
 
 %% --------------- Panels & markers for composite metrics ------------------
 ANABOLIC_TX = string(["ACAN","COL2A1","TIMP3","PPARγ","GDF5","IGF1","SOX9","Bcl2"]);
@@ -140,14 +170,40 @@ group_categories = {
 };
 
 nGroups = size(group_categories,1);
-READOUT = struct('name',[],'nodes',[],'idx',[]);
+
+% Publication titles and stable filename tags used by the integrated
+% TRUE-rescue figures. These arrays intentionally align with group_categories.
+trueRescueTitles = string({ ...
+    'Cytokines, Chemokines, Proteases & Others', ...
+    'Growth Factors', ...
+    'Transcription Factors', ...
+    'Ion Channels & Related', ...
+    'Metabolic & Related', ...
+    'ECM Anabolism & Phenotype Markers', ...
+    'Mechanical Stimuli & Receptors', ...
+    'Cell Survival, Apoptosis & Mitophagy/DNA-Damage', ...
+    'Oxidative-Stress Defense & Proteostasis', ...
+    'MAPK & Stress-Activated Kinases', ...
+    'Rho GTPases, Cytoskeletal & Hippo Regulators'});
+
+trueRescueFileTags = string({ ...
+    'Cytokines', 'GrowthFactors', 'TF', 'IonChannels', 'Metabolic', ...
+    'ECM', 'Mechanical', 'Survival', 'OxidativeStress', 'MAPK', 'RhoHippo'});
+
+assert(numel(trueRescueTitles) == nGroups && numel(trueRescueFileTags) == nGroups, ...
+    'TRUE-rescue group metadata must align with group_categories.');
+
+READOUT = struct('name',[],'nodes',[],'idx',[], ...
+                 'trueRescueTitle',[],'trueRescueFileTag',[]);
 
 for g = 1:nGroups
     pair = group_categories{g};
-    READOUT(g).name  = pair{1};
-    READOUT(g).nodes = string(pair{2});
-    READOUT(g).idx   = map_custom_names(READOUT(g).nodes, NodeNames);
-    READOUT(g).idx   = READOUT(g).idx(READOUT(g).idx>0);
+    READOUT(g).name              = pair{1};
+    READOUT(g).nodes             = string(pair{2});
+    READOUT(g).idx               = map_custom_names(READOUT(g).nodes, NodeNames);
+    READOUT(g).idx               = READOUT(g).idx(READOUT(g).idx>0);
+    READOUT(g).trueRescueTitle   = trueRescueTitles(g);
+    READOUT(g).trueRescueFileTag = trueRescueFileTags(g);
 end
 
 %% --------------- Candidate perturbations ---------------------------------
@@ -245,6 +301,10 @@ baseMean_all = mean(SS_hyper_all,1,'omitnan')';
 [~, ~, Bal_base] = panel_metrics(SS_hyper_all, SS_hyper_mu, aIdx, cIdx);
 sub    = unique([aIdx; cIdx]);
 d_base = rowdist(SS_hyper_all(:,sub), SS_norm_mu(sub)');
+
+% Reset the client RNG before permutation testing so p-values are reproducible
+% and do not depend on MATLAB session history or parallel-pool behavior.
+rng(PERMUTATION_SEED, 'twister');
 
 Results = table('Size',[0 11], 'VariableTypes', ...
   {'string','double','double','double','double','double','double','double','double','double','double'}, ...
@@ -389,11 +449,45 @@ for g = 1:nGroups
     end
 end
 
+%% --------------- TRUE Hyper -> Normal rescue rankings --------------------
+% Use in-memory baseline means and final perturbation states. This produces
+% the same metric as the former stand-alone plotting script without reading
+% the just-written workbook back from disk or rerunning the ODE model.
+rescueLabels = string(ShortClampLabels(:));
+assert(numel(rescueLabels) == size(FINAL,2), ...
+    'Number of rescue labels does not match the number of final-state columns.');
+
+fprintf('\n============================================================\n');
+fprintf('HYPER -> NORMAL TRUE RESCUE ANALYSIS\n');
+fprintf('Analyzing %d biological groups\n', nGroups);
+fprintf('============================================================\n');
+
+for g = 1:nGroups
+    analyze_group_true_rescue( ...
+        READOUT(g).nodes, ...
+        READOUT(g).trueRescueTitle, ...
+        READOUT(g).trueRescueFileTag, ...
+        NodeNames, ...
+        SS_hyper_mu, ...
+        SS_norm_mu, ...
+        FINAL, ...
+        rescueLabels, ...
+        FDIR, ...
+        N_TOP_TRUE_RESCUE, ...
+        NORMAL_REF_THRESHOLD);
+end
+
+fprintf('\n============================================================\n');
+fprintf('FINISHED TRUE RESCUE ANALYSIS\n');
+fprintf('Figures and rankings saved in:\n%s\n', FDIR);
+fprintf('============================================================\n');
 fprintf('Saved paired sequential parallel results to %s\n', ODIR);
 
 %% ===================== HELPERS ===========================================
 
-function ensure_parpool(nWorkers)
+function useParallel = ensure_parpool(nWorkers)
+%ENSURE_PARPOOL Start/reconfigure a pool; return false if parallel setup fails.
+useParallel = true;
 try
     p = gcp('nocreate');
     if isempty(p)
@@ -409,7 +503,9 @@ try
         end
     end
 catch ME
-    warning('Could not start parpool. Continuing without creating a new pool. Reason: %s', ME.message);
+    useParallel = false;
+    warning(['Could not start a parallel pool. Falling back to serial ', ...
+             'execution. Reason: %s'], ME.message);
 end
 end
 
@@ -741,6 +837,202 @@ end
 function d = rowdist(A, centerRow)
 D = bsxfun(@minus, A, centerRow); %#ok<BSXFUN>
 d = sqrt(sum(D.^2,2));
+end
+
+function analyze_group_true_rescue(groupNodes, groupTitle, fileTag, ...
+    nodeNames, hyperMean, normalMean, finalStates, rescueLabels, outDir, ...
+    nTopRequested, normalRefThreshold)
+%ANALYZE_GROUP_TRUE_RESCUE Rank and plot perturbations by profile rescue.
+%
+% The calculation is intentionally identical to the former stand-alone
+% plotting workflow, but operates directly on results already in memory.
+
+    groupNodes = string(groupNodes(:));
+    nodeNames  = string(nodeNames(:));
+    groupTitle = char(string(groupTitle));
+    fileTag    = char(string(fileTag));
+
+    [isPresent, rowIdx] = ismember(groupNodes, nodeNames);
+    if any(~isPresent)
+        fprintf('\n%s: missing nodes:\n', groupTitle);
+        disp(groupNodes(~isPresent)');
+    end
+
+    rowIdx    = rowIdx(isPresent);
+    usedNodes = groupNodes(isPresent);
+
+    if isempty(usedNodes)
+        warning('No nodes available for %s. Skipping.', groupTitle);
+        return;
+    end
+
+    fprintf('\n------------------------------------------------------------\n');
+    fprintf('%s\n', groupTitle);
+    fprintf('Using %d of %d requested nodes.\n', ...
+        numel(usedNodes), numel(groupNodes));
+
+    hyperProfile  = hyperMean(rowIdx);
+    normalProfile = normalMean(rowIdx);
+    hyperProfile  = hyperProfile(:);
+    normalProfile = normalProfile(:);
+
+    % Rows = biological-group nodes; columns = rescue strategies.
+    rescuedProfiles = finalStates(rowIdx,:);
+
+    dHyper = norm(hyperProfile - normalProfile);
+    if dHyper < eps
+        warning(['%s: Hyper and Normal profiles are essentially ', ...
+                 'identical. Skipping.'], groupTitle);
+        return;
+    end
+
+    dRescue = sqrt(sum((rescuedProfiles - normalProfile).^2, 1));
+    rescuePct = 100 .* (dHyper - dRescue) ./ dHyper;
+
+    nTop = min(nTopRequested, numel(rescuePct));
+    [bestScore, bestIdx] = maxk(rescuePct, nTop);
+    bestLabels = rescueLabels(bestIdx);
+    bestDist   = dRescue(bestIdx);
+
+    rank = (1:nTop)';
+    rankingTable = table( ...
+        rank, bestLabels(:), bestScore(:), bestDist(:), ...
+        'VariableNames', ...
+        {'Rank','RescueStrategy','RescuePercent','DistanceToNormal'});
+
+    fprintf('\nTop %d %s rescue strategies:\n\n', nTop, groupTitle);
+    disp(rankingTable);
+
+    outputPrefix = sprintf('Top%d_%s_TrueRescue', nTop, fileTag);
+    csvFile = fullfile(outDir, [outputPrefix '.csv']);
+    writetable(rankingTable, csvFile);
+
+    % Reverse order so the strongest performer is displayed at the top.
+    plotScore  = flip(bestScore(:));
+    plotLabels = flip(bestLabels(:));
+
+    fig = figure( ...
+        'Color','w', ...
+        'Position',[50 40 1900 1250], ...
+        'Renderer','painters', ...
+        'Visible','off');
+    ax = axes(fig);
+
+    bars = barh(ax, 1:nTop, plotScore, 0.68, ...
+        'FaceColor','flat', 'EdgeColor','none');
+    hold(ax,'on');
+
+    % Blue = movement toward Normal; red = movement away from Normal.
+    colors = zeros(nTop,3);
+    for k = 1:nTop
+        if plotScore(k) >= 0
+            colors(k,:) = [0.12 0.40 0.72];
+        else
+            colors(k,:) = [0.78 0.20 0.20];
+        end
+    end
+    bars.CData = colors;
+
+    % Dynamic x-axis: leave ~15% space after the strongest positive bar and
+    % expand toward negative values when a top-ranked strategy is detrimental.
+    bestPlotScore = max(plotScore);
+    minScore      = min([plotScore; 0]);
+
+    if bestPlotScore > 0
+        upperTarget = bestPlotScore * 1.15;
+    else
+        upperTarget = 10;
+    end
+    xUpper = max(ceil(upperTarget/10) * 10, 10);
+
+    if minScore < 0
+        xLower = floor((minScore*1.15)/10) * 10;
+    else
+        xLower = 0;
+    end
+
+    xline(ax, 0, 'k--', 'LineWidth', 2.5);
+
+    if bestPlotScore >= normalRefThreshold
+        xUpper = max(xUpper, 105);
+        normalLine = xline(ax, 100, ':', ...
+            '100% Normal restoration', 'LineWidth', 2.5);
+        normalLine.FontSize   = 20;
+        normalLine.FontWeight = 'bold';
+    end
+
+    xlim(ax, [xLower xUpper]);
+    rangeScore = xUpper - xLower;
+    if rangeScore < eps
+        rangeScore = 1;
+    end
+
+    if rangeScore <= 60
+        tickStep = 10;
+    else
+        tickStep = 20;
+    end
+    firstTick = ceil(xLower/tickStep) * tickStep;
+    lastTick  = floor(xUpper/tickStep) * tickStep;
+    xticks(ax, firstTick:tickStep:lastTick);
+
+    ax.YTick      = 1:nTop;
+    ax.YTickLabel = plotLabels;
+    ax.TickLabelInterpreter = 'none';
+    ax.FontName   = 'Arial';
+    ax.FontSize   = 21;
+    ax.FontWeight = 'bold';
+    ax.LineWidth  = 2;
+    ax.TickDir    = 'out';
+    ax.TickLength = [0.008 0.008];
+    ax.XGrid      = 'on';
+    ax.YGrid      = 'off';
+    ax.GridAlpha  = 0.16;
+    box(ax,'off');
+
+    xlabel(ax, 'Rescue toward Normal profile (%)', ...
+        'FontName','Arial', 'FontSize',26, 'FontWeight','bold');
+
+    title(ax, ...
+        {sprintf('Top %d Rescue Strategies — %s', nTop, groupTitle), ...
+         'Hyper → Normal Profile Restoration'}, ...
+        'FontName','Arial', ...
+        'FontSize',29, ...
+        'FontWeight','bold', ...
+        'Interpreter','none');
+
+    % One large percentage label per bar, matching the stand-alone figure.
+    for k = 1:nTop
+        if plotScore(k) >= 0
+            xPos = plotScore(k) + 0.015*rangeScore;
+            alignment = 'left';
+        else
+            xPos = plotScore(k) - 0.015*rangeScore;
+            alignment = 'right';
+        end
+
+        text(ax, xPos, k, sprintf('%.1f%%', plotScore(k)), ...
+            'FontName','Arial', ...
+            'FontSize',24, ...
+            'FontWeight','bold', ...
+            'Color','k', ...
+            'HorizontalAlignment',alignment, ...
+            'VerticalAlignment','middle', ...
+            'Clipping','off');
+    end
+
+    ylim(ax, [0.3 nTop+0.7]);
+    ax.Position = [0.28 0.11 0.66 0.80];
+
+    pngFile = fullfile(outDir, [outputPrefix '.png']);
+    exportgraphics(fig, pngFile, ...
+        'Resolution',600, 'BackgroundColor','white');
+
+    pdfFile = fullfile(outDir, [outputPrefix '.pdf']);
+    exportgraphics(fig, pdfFile, ...
+        'ContentType','vector', 'BackgroundColor','white');
+
+    close(fig);
 end
 
 function ensure_dir(d)

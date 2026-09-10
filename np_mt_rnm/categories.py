@@ -72,7 +72,9 @@ _CATEGORY_TO_NODES: dict[str, list[str]] = {
         "PI3K-M", "PI3K-E", "PIP3-M", "PIP3-E", "PDK1-M", "PDK1-E",
         "AKT1-M", "AKT1-E", "GSK3B", "ULK1", "PTEN", "PLD2", "PGE2", "COX-2",
         "CAT", "GPX1", "SOD1", "SOD2", "HO-1", "PHD2", "VHL", "Rheb",
-        "NutD", "MitD",
+        # NutD dropped in the 2026-09 revision: it was disconnected from the
+        # network, matching the same removal in NP_MT_RNM_FALSIFY4_1.m.
+        "MitD",
     ],
     "ecm_matrix": [
         "COL2A1", "COL1A1", "COL10A1", "ACAN", "TIMP3",
@@ -90,7 +92,12 @@ _CATEGORY_TO_NODES: dict[str, list[str]] = {
     ],
     "mapk": [
         "RAS-M", "RAS-E", "RAF-M", "RAF-E", "MEK-M", "MEK-E",
-        "ERK-M", "ERK-E", "MKK3/6", "MKK4/7", "JNK", "p38", "P38", "RSK", "TAK1",
+        # The Excel spells this node "P38". The MATLAB group lists spell it
+        # "p38"; group_categories is resolved case-insensitively there, but
+        # analyze_group_true_rescue uses case-sensitive ismember, so MATLAB
+        # drops P38 from the MAPK *rescue* group. We keep it — excluding a core
+        # MAPK from its own group is a typo, not a modelling decision.
+        "ERK-M", "ERK-E", "MKK3/6", "MKK4/7", "JNK", "P38", "RSK", "TAK1",
     ],
     "rho_cytoskeletal": [
         "RhoA-M", "RhoA-E", "RAC1-M", "RAC1-E", "CDC42",

@@ -20,19 +20,42 @@ from np_mt_rnm.network import load_network
 DATA_XLSX = Path(__file__).resolve().parents[1] / "data" / "MT_PRIMARY4_1.xlsx"
 
 
+# NutD was disconnected from the network in the 2026-09 dataset revision and
+# dropped from group_categories in NP_MT_RNM_FALSIFY4_1.m at the same time, so
+# it is deliberately in no category. (RESCUE_NEW4_1_final.m still lists it under
+# "Mechanical stimuli & its receptors" — flagged to Zerihun as an inconsistency.)
+UNCATEGORISED_BY_DESIGN = {"NutD"}
+
+
 def test_every_node_has_at_least_one_category():
-    """Every node in MT_PRIMARY4_1.xlsx must be assigned to at least one category.
+    """Every connected node in MT_PRIMARY4_1.xlsx must have a category.
 
     Missing nodes indicate either the Excel has nodes not listed in the MATLAB
     group_categories, OR the transcription from MATLAB to Python dropped some.
-    Either way — surface it, don't hide it.
+    Either way — surface it, don't hide it. The only permitted exceptions are
+    nodes the biologist explicitly removed from group_categories.
     """
     net = load_network(DATA_XLSX)
-    missing = [n for n in net.node_names if n not in NODE_CATEGORIES]
+    missing = [
+        n for n in net.node_names
+        if n not in NODE_CATEGORIES and n not in UNCATEGORISED_BY_DESIGN
+    ]
     assert not missing, (
         f"{len(missing)} of 147 nodes have no category assignment:\n"
         + "\n".join(f"  - {n}" for n in missing)
     )
+
+
+def test_uncategorised_nodes_are_disconnected():
+    """A node may only be uncategorised if it has no edges at all."""
+    net = load_network(DATA_XLSX)
+    for name in UNCATEGORISED_BY_DESIGN:
+        i = net.node_names.index(name)
+        degree = int(
+            net.mact[i, :].sum() + net.minh[i, :].sum()
+            + net.mact[:, i].sum() + net.minh[:, i].sum()
+        )
+        assert degree == 0, f"{name} is uncategorised but still has {degree} edges"
 
 
 def test_category_order_covers_every_declared_category():

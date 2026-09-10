@@ -15,7 +15,7 @@ import pandas as pd
 
 from np_mt_rnm.figures import plot_baseline_by_categories
 from np_mt_rnm.network import load_network
-from np_mt_rnm.simulation import REGIME_PRESETS, run_replicates
+from np_mt_rnm.simulation import PAPER_REGIMES, REGIME_PRESETS, run_replicates
 
 ROOT = Path(__file__).resolve().parents[1]
 DATA = ROOT / "data" / "MT_PRIMARY4_1.xlsx"
@@ -40,16 +40,20 @@ def main() -> None:
         )
         ensembles[regime] = ens
 
+    # The paper's baseline figures compare Hypo/Normal/Hyper only; the
+    # Hyper_rescue variant is still saved above for the rescue screen.
+    paper_ensembles = {k: ensembles[k] for k in PAPER_REGIMES}
+
     # Figure 4 — ECM + growth factors + transcription factors + cytokines/chemokines/proteases
     plot_baseline_by_categories(
-        ensembles,
+        paper_ensembles,
         categories=["ecm_matrix", "growth_factor", "transcription_factor", "cytokines_chemokines_proteases"],
         out_path=RESULTS / "figures" / "fig4_baseline_ecm_gf_tf_cyto.png",
         figsize=(14, 10),
     )
     # Figure 5 — metabolic + ion/Ca + oxidative + cell-fate
     plot_baseline_by_categories(
-        ensembles,
+        paper_ensembles,
         categories=["metabolic", "ion_channel", "oxidative_proteostasis", "cell_fate"],
         out_path=RESULTS / "figures" / "fig5_baseline_metab_ion_ox_apop.png",
         figsize=(14, 10),

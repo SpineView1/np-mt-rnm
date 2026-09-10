@@ -19,8 +19,8 @@ The original MATLAB implementation that produced the paper's numerical results i
 | Property | Value |
 |---|---|
 | Nodes (proteins, ions, ECM components, mechanical inputs) | 147 |
-| Directed interactions | 357 |
-| &nbsp;&nbsp;&nbsp;&nbsp;Activation edges | 281 |
+| Directed interactions | 353 |
+| &nbsp;&nbsp;&nbsp;&nbsp;Activation edges | 277 |
 | &nbsp;&nbsp;&nbsp;&nbsp;Inhibition edges | 76 |
 | Mechanical loading inputs (boundary species) | 3 (Hypo, NL, HL) |
 | Functional categories (visualization groups) | 12 |
@@ -289,10 +289,24 @@ pytest
 
 Tests encode the paper's biological claims as invariants:
 
-- **Network loader** — 147 nodes, 357 edges; binary adjacency; no activator/inhibitor overlap.
+- **Network loader** — 147 nodes, 353 edges; binary adjacency; no activator/inhibitor overlap.
+- **Topology revision** — NutD is disconnected (all 4 of its edges removed in the 2026-09 dataset).
 - **SQUADS ODE** — hand-computed reference values to 12-digit precision.
 - **Regime polarities** (Figs 4–5) — `ACAN[Normal] > 0.8`; `MMP13[Hyper] > 0.8`; `TNF / IL6` near zero under Normal.
-- **Falsification pass rate** (Fig 9) — ≥ 88 % concordance (paper: 95.6 %; Python port: 91.1 % due to RNG differences vs. MATLAB; 2 borderline-CI failures).
+- **Falsification pass rate** (Fig 9) — ≥ 88 % concordance (paper: 95.6 %; Python port: **88.9 % — 40/45**).
+
+  Three of the five failures (NRF2, SIRT1, AMPK) are anabolic nodes with the *correct* polarity (Δ ≈ +0.13) whose bootstrap CI lower bound falls just under the +0.02 tolerance. This is **not** an RNG artefact of the Python port, as previously assumed — those nodes are genuinely **bimodal** across replicates (SD ≈ 0.49, i.e. near-maximal for a variable settling at either 0 or 1). The remaining two (TonEBP, HSF1) are the polarity failures the paper acknowledges in Section 4.4.
+
+### Multistability under Hyper loading
+
+The model does **not** have a unique steady state under Hyper loading. Starting from 100 random initial conditions:
+
+| Regime | Replicates in the anabolic-high attractor |
+|---|---|
+| Normal | 100 % |
+| Hyper | 27 % |
+
+So 73 % of Hyper replicates collapse to the degenerative attractor (ACAN, COL2A1 → 0; ROS, MMP13, ADAMTS4/5 → 1) while 27 % remain anabolic. Ensemble **means** therefore sit between the two attractors and describe no individual cell state — e.g. mean ACAN ≈ 0.19 under Hyper, a value no replicate actually takes. Reporting mean ± CI for these nodes is misleading; the attractor-occupancy fraction is the meaningful quantity. This is a property of the model, not of the port, and MATLAB will reproduce it.
 - **Rescue top perturbations** (Figs 10B, 12B) — top ECM rescuer involves SOX9; top TF rescuer involves NRF2.
 - **Transition paths** (Fig 8) — anabolic markers rise monotonically along Hypo → Normal.
 - **SBML export** — `model.xml` validates clean; reloading via tellurium reproduces the Normal regime's SOX9-high / ROS-low signature.
@@ -303,7 +317,7 @@ Tests encode the paper's biological claims as invariants:
 
 The Python port surfaced two typos / inconsistencies in the submitted paper text:
 
-1. **Edge count** — paper Section 2.1 + abstract say *356 edges*; the Excel actually contains **357**. Section 3.1 (which already says 357) is correct.
+1. **Edge count** — paper Section 2.1, Section 3.1 and the abstract all need **353**. The Excel held 357 until the 2026-09 revision disconnected `NutD`, removing `Hypo→NutD`, `NutD→HIF-1α`, `NutD→MitD` and `NutD→ROS`. `NutD` remains a node (147 total) but is now an orphan; with no regulators SQUADS gives ω = 0, so d*X*/d*t* = −*X* and it decays to 0.
 2. **SQUADS formula sign** — paper Section 2.2 prints `exp(h·(ω − 0.5))` in the activation term; the MATLAB source (and the physically correct form, which is what produced the paper's numerical results) uses `exp(−h·(ω − 0.5))`.
 
 Both should be corrected in the manuscript before submission.

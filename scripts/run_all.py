@@ -17,6 +17,7 @@ STEPS = [
     "scripts/run_transitions.py",
     "scripts/run_falsification.py",
     "scripts/run_rescue.py",
+    "scripts/export_sbml.py",
     "scripts/build_web_bundle.py",
 ]
 
