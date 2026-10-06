@@ -22,11 +22,10 @@ from np_mt_rnm.rescue import (
     rank_group_rescue,
     run_perturbation,
 )
-from np_mt_rnm.simulation import REGIME_PRESETS, run_replicates
+from np_mt_rnm.simulation import REGIME_PRESETS, REGIME_SEEDS, run_replicates
 
 ROOT = Path(__file__).resolve().parents[1]
 N_REPS = 100
-SEED = 20260420
 
 
 def main() -> None:
@@ -37,11 +36,11 @@ def main() -> None:
     # every perturbation and for the TRUE-rescue distances. Do the same.
     print("[rescue] Hyper baseline (shared by all 35 perturbations) ...")
     hyper_baseline = run_replicates(
-        net, REGIME_PRESETS["Hyper_rescue"], n_reps=N_REPS, seed=SEED, n_jobs=-1
+        net, REGIME_PRESETS["Hyper"], n_reps=N_REPS, seed=REGIME_SEEDS["Hyper"], n_jobs=-1
     )
     print("[rescue] Normal baseline (TRUE-rescue reference) ...")
     normal_baseline = run_replicates(
-        net, REGIME_PRESETS["Normal"], n_reps=N_REPS, seed=SEED + 500, n_jobs=-1
+        net, REGIME_PRESETS["Normal"], n_reps=N_REPS, seed=REGIME_SEEDS["Normal"], n_jobs=-1
     )
 
     results = []
@@ -52,7 +51,6 @@ def main() -> None:
             anabolic_up=p.anabolic_up,
             catabolic_down=p.catabolic_down,
             n_reps=N_REPS,
-            seed=SEED + 1000 * i,
             n_jobs=-1,
             baseline=hyper_baseline,
         )
@@ -169,6 +167,17 @@ def main() -> None:
         print(f"[rescue]   {cat}: best = {best} ({ranking.rescue_percent[0]:.1f}%)")
 
     pd.DataFrame(ranking_rows).to_csv(tables / "true_rescue_rankings.csv", index=False)
+
+    # Replicate-level screen for the node-resolved manuscript figures
+    # (*_rescue1.png): paired deltas need every replicate, not just means.
+    np.savez_compressed(
+        ROOT / "results" / "replicates" / "rescue_screen.npz",
+        node_names=np.array(results[0].node_names),
+        labels=np.array(labels),
+        hyper_states=hyper_baseline.steady_states,
+        normal_states=normal_baseline.steady_states,
+        perturbed_states=np.stack([r.perturbed_states for r in results]),
+    )
 
     print("[rescue] done")
 

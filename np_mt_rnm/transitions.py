@@ -18,7 +18,7 @@ from scipy.integrate import solve_ivp
 
 from np_mt_rnm.network import Network
 from np_mt_rnm.ode import squads_rhs
-from np_mt_rnm.simulation import _random_initial_state, build_clamps, run_replicates
+from np_mt_rnm.simulation import build_clamps, matlab_rand, run_replicates
 
 HYPO_TO_NORMAL_PATH: list[dict[str, float]] = [
     {"Hypo": 0.35, "NL": 0.10, "HL": 0.01},
@@ -90,13 +90,12 @@ def _one_trajectory(
     seed: int,
 ) -> np.ndarray:
     """Single replicate trajectory across the regime switch. Returns (n_t, n_nodes)."""
-    rng = np.random.default_rng(seed)
     n = len(net.node_names)
 
     mask_a, x_clamp_a = build_clamps(net, regime=regime_a)
     mask_b, x_clamp_b = build_clamps(net, regime=regime_b)
 
-    x0 = _random_initial_state(n, rng)
+    x0 = matlab_rand(n, seed)
     x0[mask_a] = x_clamp_a[mask_a]
 
     t_eval_a = t_eval[t_eval <= t_switch]

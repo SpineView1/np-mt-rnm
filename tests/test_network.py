@@ -45,33 +45,22 @@ def test_load_network_stimuli_includes_hypo_nl_hl():
 
 
 def test_load_network_edge_count_matches_excel():
-    """Pins the edge count of the 2026-09 dataset revision.
+    """Pins the network the manuscript's figures were generated with.
 
-    History: the paper's Section 2.1 and abstract say 356 and Section 3.1
-    says 357; the pre-revision Excel actually held 357. The 2026-09 revision
-    disconnected NutD entirely (4 activation edges removed), leaving 353.
-    The paper text needs to be updated to match.
+    357 directed edges (281 activation + 76 inhibition). Every rescue
+    percentage printed in the manuscript (text and Top-20 figures) is
+    reproduced to the printed decimal with this network and not with the
+    353-edge 2026-09 revision, which removed NutD's four edges; see
+    tests/test_paper_reproduction.py.
     """
     net = load_network(DATA_XLSX)
-    total_edges = int(net.mact.sum() + net.minh.sum())
-    assert total_edges == 353, f"expected 353 edges, got {total_edges}"
+    assert int(net.mact.sum()) == 281
+    assert int(net.minh.sum()) == 76
+    assert int(net.mact.sum() + net.minh.sum()) == 357
 
 
-def test_nutd_is_disconnected():
-    """The 2026-09 dataset revision removed every NutD edge.
-
-    Removed: Hypo->NutD, NutD->HIF-1a, NutD->MitD, NutD->ROS (all activation).
-    NutD remains in the node list (still 147 nodes) but is now an orphan, so
-    it must have no incoming and no outgoing regulation.
-    """
-    net = load_network(DATA_XLSX)
-    i = net.node_names.index("NutD")
-    assert net.mact[i, :].sum() == 0 and net.minh[i, :].sum() == 0, "NutD has regulators"
-    assert net.mact[:, i].sum() == 0 and net.minh[:, i].sum() == 0, "NutD has targets"
-
-
-def test_previously_removed_nutd_edges_are_absent():
-    """Guards the four specific edges dropped in the 2026-09 revision."""
+def test_nutd_edges_present():
+    """The four NutD edges dropped in the 353-edge revision are present."""
     net = load_network(DATA_XLSX)
     idx = {n: k for k, n in enumerate(net.node_names)}
     for target, regulator in (
@@ -80,6 +69,6 @@ def test_previously_removed_nutd_edges_are_absent():
         ("MitD", "NutD"),
         ("ROS", "NutD"),
     ):
-        assert net.mact[idx[target], idx[regulator]] == 0, (
-            f"edge {regulator} -> {target} should have been removed"
+        assert net.mact[idx[target], idx[regulator]] == 1, (
+            f"edge {regulator} -> {target} missing"
         )

@@ -15,14 +15,13 @@ import pandas as pd
 
 from np_mt_rnm.figures import plot_baseline_by_categories
 from np_mt_rnm.network import load_network
-from np_mt_rnm.simulation import PAPER_REGIMES, REGIME_PRESETS, run_replicates
+from np_mt_rnm.simulation import PAPER_REGIMES, REGIME_PRESETS, REGIME_SEEDS, run_replicates
 
 ROOT = Path(__file__).resolve().parents[1]
 DATA = ROOT / "data" / "MT_PRIMARY4_1.xlsx"
 RESULTS = ROOT / "results"
 
 N_REPS = 100
-SEED = 20260420
 
 
 def main() -> None:
@@ -30,7 +29,9 @@ def main() -> None:
     ensembles = {}
     for regime, preset in REGIME_PRESETS.items():
         print(f"[baseline] running {regime} ({N_REPS} replicates)...")
-        ens = run_replicates(net, regime=preset, n_reps=N_REPS, seed=SEED, n_jobs=-1)
+        ens = run_replicates(
+            net, regime=preset, n_reps=N_REPS, seed=REGIME_SEEDS[regime], n_jobs=-1
+        )
         assert ens.all_converged, f"{regime}: {(~ens.converged).sum()} non-converged replicates"
         np.savez_compressed(
             RESULTS / "replicates" / f"baseline_{regime.lower()}.npz",
@@ -40,8 +41,6 @@ def main() -> None:
         )
         ensembles[regime] = ens
 
-    # The paper's baseline figures compare Hypo/Normal/Hyper only; the
-    # Hyper_rescue variant is still saved above for the rescue screen.
     paper_ensembles = {k: ensembles[k] for k in PAPER_REGIMES}
 
     # Figure 4 — ECM + growth factors + transcription factors + cytokines/chemokines/proteases

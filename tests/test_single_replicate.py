@@ -27,7 +27,7 @@ def test_clamped_nodes_end_at_clamp_value(net):
     idx_nl = net.node_names.index("NL")
     idx_hypo = net.node_names.index("Hypo")
     np.testing.assert_allclose(result.x_final[idx_hl], 0.80, atol=1e-10)
-    np.testing.assert_allclose(result.x_final[idx_nl], 0.10, atol=1e-10)
+    np.testing.assert_allclose(result.x_final[idx_nl], 0.01, atol=1e-10)
     np.testing.assert_allclose(result.x_final[idx_hypo], 0.01, atol=1e-10)
 
 

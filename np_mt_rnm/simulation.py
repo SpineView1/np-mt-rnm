@@ -17,29 +17,31 @@ from np_mt_rnm.ode import squads_rhs
 # The three chronic mechanical loading inputs. These are the only nodes that
 # are externally driven rather than computed by the network, so they are the
 # only SBML boundary species. Do NOT infer this set from "has no regulators":
-# since the 2026-09 revision NutD also has no regulators, but it is a normal
-# node whose omega is 0, giving dX/dt = -X (it decays to 0, it is not held).
+# MATLAB gives any unregulated node omega = 0, so dX/dt = -X and it decays to
+# 0 rather than being held (this bit NutD in the 353-edge 2026-09 revision).
 MECHANICAL_INPUTS: tuple[str, ...] = ("Hypo", "NL", "HL")
 
-# Per paper Section 2.2 and MATLAB baseline values.
-#
-# The two MATLAB scripts disagree on NL in the Hyper regime and we mirror each
-# one rather than picking a winner:
-#   NP_MT_RNM_FALSIFY4_1.m:53   Hypo_hype = 0.01; NL_hype = 0.10; HL_hype = 0.80
-#   RESCUE_NEW4_1_final.m:111   Hypo_hype = 0.01; NL_hype = 0.01; HL_hype = 0.80
-# "Hyper" is the falsification/baseline value, since that script produces the
-# paper's baseline figures and its NL endpoint agrees with transitions.py.
-# "Hyper_rescue" is used only by the rescue screen. Flagged for Zerihun.
+# Per paper Section 2.2: "normal loading was represented by NL = 0.8
+# (Hypo = HL = 0.01), hyper-loading by HL = 0.8 (Hypo = NL = 0.01), and
+# hypo-loading by Hypo = 0.2 (NL = HL = 0.01)". Identical to
+# RESCUE_NEW4_1_final.m:109-111. (NP_MT_RNM_FALSIFY4_1.m:53 uses NL = 0.10 for
+# Hyper; we follow the paper. With seeded ensembles the falsification outcome
+# is the same, 43/45, under either value.)
 REGIME_PRESETS: dict[str, dict[str, float]] = {
-    "Hypo":         {"Hypo": 0.20, "NL": 0.01, "HL": 0.01},
-    "Normal":       {"Hypo": 0.01, "NL": 0.80, "HL": 0.01},
-    "Hyper":        {"Hypo": 0.01, "NL": 0.10, "HL": 0.80},
-    "Hyper_rescue": {"Hypo": 0.01, "NL": 0.01, "HL": 0.80},
+    "Hypo":   {"Hypo": 0.20, "NL": 0.01, "HL": 0.01},
+    "Normal": {"Hypo": 0.01, "NL": 0.80, "HL": 0.01},
+    "Hyper":  {"Hypo": 0.01, "NL": 0.01, "HL": 0.80},
 }
 
-# The three regimes the paper's baseline figures compare. "Hyper_rescue" is an
-# internal variant used only by the rescue screen, so it is excluded here.
 PAPER_REGIMES: tuple[str, ...] = ("Hypo", "Normal", "Hyper")
+
+# Seed of replicate 1 for each baseline ensemble. RESCUE_NEW4_1_final.m seeds
+# replicate r = 1..100 with rng(BASE_SEED + offset + r, 'twister') where
+# BASE_SEED = 1 and offset = 1000 / 2000 / 3000 for Hypo / Normal / Hyper, so
+# replicate r of e.g. Hyper uses seed 3001 + r. run_replicates gives replicate
+# k (0-based) seed `seed + k`, so passing these values reproduces MATLAB's
+# initial states exactly (see matlab_rand).
+REGIME_SEEDS: dict[str, int] = {"Hypo": 1002, "Normal": 2002, "Hyper": 3002}
 
 # Solver settings per spec Section 6 (match MATLAB odeset).
 T_SPAN = (0.0, 100.0)
@@ -94,9 +96,15 @@ class ReplicateResult:
     seed: int
 
 
-def _random_initial_state(n: int, rng: np.random.Generator) -> np.ndarray:
-    """Uniform [0, 1] initial condition, matching MATLAB rand(n,1)."""
-    return rng.uniform(0.0, 1.0, size=n)
+def matlab_rand(n: int, seed: int) -> np.ndarray:
+    """Return MATLAB's ``rng(seed, 'twister'); rand(n, 1)`` for seed >= 1.
+
+    MATLAB's default generator and numpy's legacy RandomState are the same
+    Mersenne Twister (MT19937, init_genrand seeding, 53-bit doubles), so the
+    draws are bit-identical. MATLAB maps seed 0 to 5489, so seeds below 1 do
+    not correspond to MATLAB.
+    """
+    return np.random.RandomState(seed).random_sample(n)
 
 
 def run_single_replicate(
@@ -114,12 +122,13 @@ def run_single_replicate(
     additionally overwritten in the final state for bit-exactness.
     """
     n = len(net.node_names)
-    rng = np.random.default_rng(seed)
 
     clamped_mask, x_clamp = build_clamps(net, regime=regime, user_clamps=user_clamps)
 
     if x0 is None:
-        x0 = _random_initial_state(n, rng)
+        if seed is None:
+            raise ValueError("either seed or x0 must be given")
+        x0 = matlab_rand(n, seed)
     else:
         x0 = np.asarray(x0, dtype=float).copy()
 

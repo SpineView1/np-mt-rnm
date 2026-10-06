@@ -72,9 +72,7 @@ _CATEGORY_TO_NODES: dict[str, list[str]] = {
         "PI3K-M", "PI3K-E", "PIP3-M", "PIP3-E", "PDK1-M", "PDK1-E",
         "AKT1-M", "AKT1-E", "GSK3B", "ULK1", "PTEN", "PLD2", "PGE2", "COX-2",
         "CAT", "GPX1", "SOD1", "SOD2", "HO-1", "PHD2", "VHL", "Rheb",
-        # NutD dropped in the 2026-09 revision: it was disconnected from the
-        # network, matching the same removal in NP_MT_RNM_FALSIFY4_1.m.
-        "MitD",
+        "NutD", "MitD",
     ],
     "ecm_matrix": [
         "COL2A1", "COL1A1", "COL10A1", "ACAN", "TIMP3",

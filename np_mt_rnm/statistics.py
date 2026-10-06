@@ -74,3 +74,33 @@ def bh_fdr(pvals: np.ndarray) -> np.ndarray:
     out = np.empty(n)
     out[order] = np.clip(q, 0.0, 1.0)
     return out
+
+
+def permutation_pvalues(
+    x: np.ndarray,
+    y: np.ndarray,
+    n_perm: int = 1000,
+    rng: np.random.RandomState | np.random.Generator | None = None,
+) -> np.ndarray:
+    """Column-wise two-sided permutation p-values for mean(x) - mean(y).
+
+    Vectorised form of perm_p_two_sided in RESCUE_NEW4_1_final.m, applied to
+    every column (node) of x and y, shape (n_x, n_nodes) and (n_y, n_nodes).
+    One set of n_perm label permutations is shared across columns; MATLAB draws
+    a fresh randperm per node, so individual p-values differ at the level of
+    permutation noise. p = (count + 1) / (n_perm + 1).
+    """
+    rng = rng if rng is not None else np.random.default_rng()
+    x = np.asarray(x, dtype=float)
+    y = np.asarray(y, dtype=float)
+    nx = x.shape[0]
+    pool = np.vstack([x, y])
+    n = pool.shape[0]
+    observed = np.abs(x.mean(axis=0) - y.mean(axis=0))
+    count = np.zeros(pool.shape[1])
+    for _ in range(n_perm):
+        perm = rng.permutation(n)
+        a = pool[perm[:nx]].mean(axis=0)
+        b = pool[perm[nx:]].mean(axis=0)
+        count += np.abs(a - b) >= observed
+    return (count + 1) / (n_perm + 1)

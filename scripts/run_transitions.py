@@ -20,18 +20,23 @@ from np_mt_rnm.transitions import (
 
 ROOT = Path(__file__).resolve().parents[1]
 N_REPS = 100
-SEED = 20260420
+# NP_MT_RNM_FSA4_1.m draws its initial states with an unseeded rand inside
+# parfor, so its exact ensembles cannot be regenerated even in MATLAB. We seed
+# every replicate the way RESCUE_NEW4_1_final.m does (MATLAB twister, one seed
+# per replicate); step k of a path uses seeds base + 1000*k + r.
+SEED_HYPO_TO_NORMAL = 10001
+SEED_NORMAL_TO_HYPER = 20001
 
 
 def main() -> None:
     net = load_network(ROOT / "data" / "MT_PRIMARY4_1.xlsx")
     print("[transitions] running Hypo→Normal path ...")
     h2n = run_transition_path(
-        net, HYPO_TO_NORMAL_PATH, n_reps=N_REPS, seed=SEED, n_jobs=-1
+        net, HYPO_TO_NORMAL_PATH, n_reps=N_REPS, seed=SEED_HYPO_TO_NORMAL, n_jobs=-1
     )
     print("[transitions] running Normal→Hyper path ...")
     n2h = run_transition_path(
-        net, NORMAL_TO_HYPER_PATH, n_reps=N_REPS, seed=SEED + 10000, n_jobs=-1
+        net, NORMAL_TO_HYPER_PATH, n_reps=N_REPS, seed=SEED_NORMAL_TO_HYPER, n_jobs=-1
     )
 
     figs = ROOT / "results" / "figures"

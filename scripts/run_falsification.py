@@ -12,7 +12,7 @@ from np_mt_rnm.falsification import (
 )
 from np_mt_rnm.figures import plot_fig9_forest
 from np_mt_rnm.network import load_network
-from np_mt_rnm.simulation import REGIME_PRESETS, run_replicates
+from np_mt_rnm.simulation import REGIME_PRESETS, REGIME_SEEDS, run_replicates
 
 ROOT = Path(__file__).resolve().parents[1]
 N_REPS = 100
@@ -24,14 +24,14 @@ def main() -> None:
     net = load_network(ROOT / "data" / "MT_PRIMARY4_1.xlsx")
     print("[falsify] running Normal ensemble ...")
     normal = run_replicates(
-        net, REGIME_PRESETS["Normal"], n_reps=N_REPS, seed=SEED, n_jobs=-1
+        net, REGIME_PRESETS["Normal"], n_reps=N_REPS, seed=REGIME_SEEDS["Normal"], n_jobs=-1
     )
     print("[falsify] running Hyper ensemble ...")
     hyper = run_replicates(
         net,
         REGIME_PRESETS["Hyper"],
         n_reps=N_REPS,
-        seed=SEED + 10000,
+        seed=REGIME_SEEDS["Hyper"],
         n_jobs=-1,
     )
 

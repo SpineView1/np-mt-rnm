@@ -1,6 +1,6 @@
 # NP-MT-RNM: Mechanotransduction Regulatory Network Model for Nucleus Pulposus Cells
 
-**A systems-level network model reveals how mechanical loading organizes regulatory states and transitions in nucleus pulposus cells**
+**A systems-level network model reveals mechanical regulation of nucleus pulposus cell states**
 
 Workineh Z. G.<sup>1</sup>, Chemorion F. K.<sup>1</sup>, Noailly J.<sup>1</sup>
 
@@ -12,15 +12,27 @@ Workineh Z. G.<sup>1</sup>, Chemorion F. K.<sup>1</sup>, Noailly J.<sup>1</sup>
 
 This repository contains the computational implementation of a literature-curated **regulatory network model (RNM)** of human **nucleus pulposus (NP) cells** in the intervertebral disc (IVD), specifically extended to capture **mechanotransduction** under chronic mechanical loading. The model integrates upstream mechanosensors, cytoskeletal effectors, MAPK / PI3K / Wnt signaling, transcription factors, and downstream ECM / cytokine / oxidative / cell-fate phenotypes into a single dynamical system driven by three exclusive mechanical inputs: **hypo-loading**, **normal loading**, and **hyper-loading**.
 
-The original MATLAB implementation that produced the paper's numerical results is preserved unmodified under `legacy/`. This Python port reproduces every paper figure (Figs 3–12 + Supp S3–S9) from a single command, and additionally exposes the model as an **SBML Level 3 Version 2** file (`model.xml`) so any standards-compliant simulator (libRoadRunner, COPASI, tellurium) can drive it.
+The original MATLAB implementation that produced the paper's numerical results is preserved unmodified under `legacy/`. This Python port regenerates every computational figure of the manuscript from a single command, and additionally exposes the model as an **SBML Level 3 Version 2** file (`model.xml`) so any standards-compliant simulator (libRoadRunner, COPASI, tellurium) can drive it.
+
+### Reproducibility against the manuscript
+
+The port is checked against the manuscript's own numbers, not only against biological plausibility:
+
+- **Rescue screen** — every percentage printed in the manuscript text and on the bars of the six Top-20 rescue figures is reproduced **to the printed decimal** (`tests/test_paper_reproduction.py`).
+- **Falsification** — **43/45** rules satisfied, failing exactly **TonEBP** and **HSF1**, as reported (`tests/test_falsification_pass_rate.py`).
+- **Topology** — same out-degree, betweenness and harmonic-closeness rankings (NF-κB: 24 outgoing edges, 20 activating / 4 inhibiting; mTORC1 highest betweenness; ROS highest harmonic closeness).
+
+This holds because the port draws its random initial states with MATLAB's own generator: numpy's `RandomState(seed)` is the same Mersenne Twister as MATLAB's `rng(seed, 'twister')`, so with the per-replicate seeds used by `RESCUE_NEW4_1_final.m` (replicate *r* = 1…100 seeded 1001+*r* / 2001+*r* / 3001+*r* for Hypo / Normal / Hyper) the 100 initial states are bit-identical to MATLAB's.
+
+The model is **multistable**, so ensemble means depend on which initial states are drawn: under Normal loading NRF2, SIRT1 and AMPK settle at 0 in about half of random starts and at 1 in the other half, and under Hyper loading about a quarter of starts remain in the anabolic attractor (ACAN, COL2A1 high). `NP_MT_RNM_FALSIFY4_1.m` and `NP_MT_RNM_FSA4_1.m` draw `rand` inside `parfor` without per-replicate seeds, so the exact bar heights of the baseline, falsification and transition figures vary between MATLAB runs; the port seeds those ensembles deterministically, reproducing the same charts and conclusions (pass/fail outcome, regime patterns) rather than one particular unseeded draw. Across 30 independent 100-replicate ensembles the falsification outcome was 43/45 in 28 and 41/45 (NRF2 and SIRT1 also failing) in 2.
 
 ### Network at a glance
 
 | Property | Value |
 |---|---|
 | Nodes (proteins, ions, ECM components, mechanical inputs) | 147 |
-| Directed interactions | 353 |
-| &nbsp;&nbsp;&nbsp;&nbsp;Activation edges | 277 |
+| Directed interactions | 357 |
+| &nbsp;&nbsp;&nbsp;&nbsp;Activation edges | 281 |
 | &nbsp;&nbsp;&nbsp;&nbsp;Inhibition edges | 76 |
 | Mechanical loading inputs (boundary species) | 3 (Hypo, NL, HL) |
 | Functional categories (visualization groups) | 12 |
@@ -84,17 +96,17 @@ where $k_a$ and $k_i$ count the activators and inhibitors of node $n$, respectiv
 
 | Regime | Hypo | NL | HL |
 |---|---|---|---|
-| Hypo  | 0.80 | 0.01 | 0.01 |
+| Hypo  | 0.20 | 0.01 | 0.01 |
 | Normal | 0.01 | 0.80 | 0.01 |
 | Hyper  | 0.01 | 0.01 | 0.80 |
 
-2. **Baseline ensembles** (Figs 4–5): for each regime, 100 replicate ODE solves from independent random initial conditions $x_0 \sim \mathcal{U}(0, 1)^N$, integrated over $t \in [0, 100]$. The steady state is taken as $x(t = 100)$.
+2. **Baseline ensembles**: for each regime, 100 replicate ODE solves from random initial conditions $x_0 \sim \mathcal{U}(0, 1)^N$ (MATLAB-identical seeds, see above), integrated over $t \in [0, 100]$ with RK45 (`rtol = 1e-8`, `atol = 1e-10`, `max_step = 0.5`, as `ode45` in the MATLAB code). The steady state is $x(t = 100)$; every replicate reaches $|dx/dt| < 10^{-8}$.
 
-3. **Falsification benchmark** (Fig 9): 45 hand-curated rules of the form *"node X is expected to go up/down between Normal and Hyper"*, scored against the model with paired bootstrap CIs (10,000 resamples, BH-FDR for multiple testing).
+3. **Falsification benchmark**: 45 rules (17 anabolic, expected Normal > Hyper; 28 catabolic, expected Hyper > Normal). For each node $\Delta = \bar{x}_{\text{Normal}} - \bar{x}_{\text{Hyper}}$ with a 95 % nonparametric bootstrap CI (10,000 resamples). An anabolic rule passes if the CI lower bound exceeds $F_{\text{TOL}} = 0.02$; a catabolic rule if the upper bound is below $-0.02$.
 
-4. **Rescue screen** (Figs 10–12 + Supp S7–S9): starting from the Hyper steady-state ensemble, 35 perturbations evaluate single (5 catabolic ↓ + 5 anabolic ↑) and dual ($5 \times 5$) clamps; ranked by per-category mean $|\Delta|$ relative to the unperturbed Hyper baseline.
+4. **Hyper → Normal rescue screen**: each of the 100 Hyper steady-state replicates is continued with the intervention clamped (SOX9, PPARγ, HIF-1α, NRF2, IκBα → 1; RhoA-E, PIEZO1, PI3K-E, FAK-E, ROS → 0), giving 10 single and 25 cross-class dual interventions. Module-level rescue is $R_{p,\mathcal{C}} = 100\,(1 - D_{p,\mathcal{C}} / D_{\text{Hyper},\mathcal{C}})$, the percentage of the Hyper-to-Normal Euclidean distance of the module's ensemble-mean profile removed by intervention $p$; the top 20 per module are reported. Node-resolved responses use the paired per-replicate $\Delta_{r,i}^p = x^p_{r,i} - x^{\text{Hyper}}_{r,i}$.
 
-5. **Regime transitions** (Figs 6–8 + Supp S3–S6): constrained gradient paths along Hypo→Normal and Normal→Hyper, computed as a sequence of intermediate boundary inputs with replicate-paired solves at each step.
+5. **Constrained transition paths**: six steps along Hypo → Normal, $(\text{Hypo}, \text{NL}) = (0.35, 0.10) \to (0.10, 0.35)$ with HL = 0.01, and Normal → Hyper, $(\text{NL}, \text{HL}) = (0.35, 0.10) \to (0.10, 0.35)$ with Hypo = 0.01; 100 replicates per step.
 
 ---
 
@@ -109,7 +121,7 @@ np-mt-rnm/
 ├── CITATION.cff
 │
 ├── data/
-│   ├── MT_PRIMARY4_1.xlsx          # 147-node × 4-col edge list
+│   ├── MT_PRIMARY4_1.xlsx          # 147 nodes, 357 edges (network used for the manuscript)
 │   └── falsification_benchmark.csv # 45 curated rules
 │
 ├── np_mt_rnm/                      # installable Python package
@@ -128,16 +140,18 @@ np-mt-rnm/
 │
 ├── scripts/                        # reproducibility entry points
 │   ├── run_all.py                  # one-shot full reproduction
-│   ├── run_baseline.py             # Figs 3, 4, 5
-│   ├── run_topology.py             # Fig 3
-│   ├── run_transitions.py          # Figs 6, 7, 8 + Supp S3–S6
-│   ├── run_falsification.py        # Fig 9 + pass rate
-│   ├── run_rescue.py               # Figs 10, 11, 12 + Supp S7–S9
+│   ├── run_baseline.py             # baseline ensembles (Hypo / Normal / Hyper)
+│   ├── run_topology.py             # out-degree, betweenness, harmonic closeness
+│   ├── run_transitions.py          # constrained transition paths
+│   ├── run_falsification.py        # 45-rule benchmark + pass rate
+│   ├── run_rescue.py               # 35-intervention rescue screen
+│   ├── run_paper_figures.py        # every manuscript figure → results/figures/paper/
 │   ├── build_web_bundle.py         # JSON artifacts for the webapp
+│   ├── build_paper_bundle.py       # paper_results.json (webapp "Paper results" tab)
 │   └── export_sbml.py              # regenerate model.xml
 │
 ├── results/                        # committed build artifacts
-│   ├── figures/                    # Figs 3–12 + Supp S3–S9 (PNG)
+│   ├── figures/paper/              # the manuscript's figures, same file names
 │   ├── tables/                     # one CSV per analysis
 │   ├── replicates/                 # raw steady-state ensembles (NPZ)
 │   └── web_bundle/                 # JSON consumed by np-mt-rnm-web
@@ -152,7 +166,7 @@ np-mt-rnm/
 
 ### Requirements
 
-- Python ≥ 3.10
+- Python ≥ 3.11
 - NumPy, SciPy, pandas, openpyxl, matplotlib
 - joblib (parallel ensemble runs)
 - python-libsbml (SBML export)
@@ -175,12 +189,27 @@ python scripts/run_all.py
 
 Outputs land in:
 
-- `results/figures/` — Figures 3–12 + Supp S3–S9 (PNG)
+- `results/figures/paper/` — every computational figure of the manuscript, under the manuscript's own file names (below)
 - `results/tables/` — one CSV per analysis
 - `results/replicates/` — raw steady-state ensembles (NPZ)
 - `results/web_bundle/` — JSON artifacts consumed by [np-mt-rnm-web](https://github.com/SpineView1/np-mt-rnm-web)
 
-Full reproduction takes 5–15 minutes on 8 cores (dominated by the rescue screen at ~2.5 min + transitions at ~30 s).
+Full reproduction takes about 4 minutes on 10 cores (dominated by the rescue screen).
+
+| Manuscript figure | File in `results/figures/paper/` |
+|---|---|
+| Fig. 3 — topological metrics | `TOPO_STATS.png` |
+| Fig. 4 — baseline: ECM, growth factors, TFs, cytokines | `BSL_ECM_GF.png` |
+| Fig. 5 — baseline: metabolic, ion channels, oxidative stress, cell fate | `BSL_MET_OXI.png` |
+| Fig. 6 — ECM transition heatmaps | `ECM_transition.png` |
+| Fig. 7 — representative transition trajectories | `Representative_transition_paths.png` |
+| Fig. 8 — falsification | `NP_MT_FALS.png` |
+| Fig. 9 — ECM rescue ranking | `ECM_rescue.png` |
+| Supp. S5 — transition heatmaps | `TF_transition.png`, `GF_transition.png`, `CYT_transition.png`, `OXI_transition.png`, `CSF_transition.png` |
+| Supp. S6 — rescue rankings | `GF_rescue.png`, `TF_rescue.png`, `CYT_rescue.png`, `OXI_rescue.png`, `CSF_rescue.png` |
+| Supp. S6 — node-resolved rescue responses | `ECM_rescue1.png`, `GF_rescue1.png`, `TF_rescue1.png`, `CYT_rescue1.png`, `OXI_rescue1.png`, `CSF_rescue1.png` |
+
+Figures 1–2 and Supplementary S1 (pathway schematic, Cytoscape network drawing, curation pipeline) are illustrations, not model output.
 
 ---
 
@@ -188,7 +217,7 @@ Full reproduction takes 5–15 minutes on 8 cores (dominated by the rescue scree
 
 ```python
 from np_mt_rnm.network import load_network
-from np_mt_rnm.simulation import REGIME_PRESETS, run_replicates
+from np_mt_rnm.simulation import REGIME_PRESETS, REGIME_SEEDS, run_replicates
 from np_mt_rnm.rescue import run_perturbation
 from np_mt_rnm.transitions import run_trajectory, HYPO_TO_NORMAL_PATH
 
@@ -198,13 +227,14 @@ print(f"{len(net.node_names)} nodes, "
       f"{int(net.mact.sum())} act + {int(net.minh.sum())} inh edges")
 
 # Baseline ensemble under Normal loading
-ens = run_replicates(net, REGIME_PRESETS["Normal"], n_reps=100, seed=42)
+# (REGIME_SEEDS gives the MATLAB seeds of RESCUE_NEW4_1_final.m)
+ens = run_replicates(net, REGIME_PRESETS["Normal"], n_reps=100, seed=REGIME_SEEDS["Normal"])
 print(f"SOX9 mean = {ens.mean()[net.node_names.index('SOX9')]:.3f}")
 
 # Single rescue perturbation: Hyper + clamp(SOX9=1, RhoA-E=0)
 result = run_perturbation(
     net, anabolic_up="SOX9", catabolic_down="RhoA-E",
-    n_reps=100, seed=42,
+    n_reps=100,
 )
 print(f"|Δ| over all nodes = {abs(result.mean_delta).mean():.3f}")
 
@@ -289,38 +319,23 @@ pytest
 
 Tests encode the paper's biological claims as invariants:
 
-- **Network loader** — 147 nodes, 353 edges; binary adjacency; no activator/inhibitor overlap.
-- **Topology revision** — NutD is disconnected (all 4 of its edges removed in the 2026-09 dataset).
+- **Paper reproduction** — every rescue percentage printed in the manuscript, to the printed decimal; top-ranked intervention per module.
+- **Falsification** — exactly 43/45, failing TonEBP and HSF1.
+- **MATLAB RNG** — `matlab_rand` returns MT19937 `init_genrand` draws, as `rng(seed, 'twister'); rand`.
+- **Network loader** — 147 nodes, 357 edges (281 activation, 76 inhibition); binary adjacency; no activator/inhibitor overlap.
 - **SQUADS ODE** — hand-computed reference values to 12-digit precision.
-- **Regime polarities** (Figs 4–5) — `ACAN[Normal] > 0.8`; `MMP13[Hyper] > 0.8`; `TNF / IL6` near zero under Normal.
-- **Falsification pass rate** (Fig 9) — ≥ 88 % concordance (paper: 95.6 %; Python port: **88.9 % — 40/45**).
-
-  Three of the five failures (NRF2, SIRT1, AMPK) are anabolic nodes with the *correct* polarity (Δ ≈ +0.13) whose bootstrap CI lower bound falls just under the +0.02 tolerance. This is **not** an RNG artefact of the Python port, as previously assumed — those nodes are genuinely **bimodal** across replicates (SD ≈ 0.49, i.e. near-maximal for a variable settling at either 0 or 1). The remaining two (TonEBP, HSF1) are the polarity failures the paper acknowledges in Section 4.4.
-
-### Multistability under Hyper loading
-
-The model does **not** have a unique steady state under Hyper loading. Starting from 100 random initial conditions:
-
-| Regime | Replicates in the anabolic-high attractor |
-|---|---|
-| Normal | 100 % |
-| Hyper | 27 % |
-
-So 73 % of Hyper replicates collapse to the degenerative attractor (ACAN, COL2A1 → 0; ROS, MMP13, ADAMTS4/5 → 1) while 27 % remain anabolic. Ensemble **means** therefore sit between the two attractors and describe no individual cell state — e.g. mean ACAN ≈ 0.19 under Hyper, a value no replicate actually takes. Reporting mean ± CI for these nodes is misleading; the attractor-occupancy fraction is the meaningful quantity. This is a property of the model, not of the port, and MATLAB will reproduce it.
-- **Rescue top perturbations** (Figs 10B, 12B) — top ECM rescuer involves SOX9; top TF rescuer involves NRF2.
-- **Transition paths** (Fig 8) — anabolic markers rise monotonically along Hypo → Normal.
+- **Regime polarities** (Figs. 4–5) — `ACAN[Normal] > 0.8`; `MMP13[Hyper] > 0.8`; `TNF / IL6` near zero under Normal.
+- **Rescue top perturbations** — node-level response rankings (mean |Δ|) per module.
+- **Transition paths** (Figs. 6–7) — anabolic markers rise monotonically along Hypo → Normal.
 - **SBML export** — `model.xml` validates clean; reloading via tellurium reproduces the Normal regime's SOX9-high / ROS-low signature.
 
 ---
 
-## Known paper-text corrections
+## Network version
 
-The Python port surfaced two typos / inconsistencies in the submitted paper text:
+`data/MT_PRIMARY4_1.xlsx` is the **357-edge** network that produced the manuscript's figures. A later revision of the spreadsheet (2026-09) removed the four `NutD` edges (`Hypo→NutD`, `NutD→HIF-1α`, `NutD→MitD`, `NutD→ROS`), leaving 353; with it the transcription-factor and oxidative-stress rescue percentages move by 0.1–0.3 points and no longer match the printed values. The repository follows the manuscript.
 
-1. **Edge count** — paper Section 2.1, Section 3.1 and the abstract all need **353**. The Excel held 357 until the 2026-09 revision disconnected `NutD`, removing `Hypo→NutD`, `NutD→HIF-1α`, `NutD→MitD` and `NutD→ROS`. `NutD` remains a node (147 total) but is now an orphan; with no regulators SQUADS gives ω = 0, so d*X*/d*t* = −*X* and it decays to 0.
-2. **SQUADS formula sign** — paper Section 2.2 prints `exp(h·(ω − 0.5))` in the activation term; the MATLAB source (and the physically correct form, which is what produced the paper's numerical results) uses `exp(−h·(ω − 0.5))`.
-
-Both should be corrected in the manuscript before submission.
+The SQUADS activation term is implemented with the negative exponent, $e^{-h(\omega - 0.5)}$, exactly as in `legacy/ODESysFunS.m`.
 
 ---
 
@@ -328,7 +343,7 @@ Both should be corrected in the manuscript before submission.
 
 If you use this code or model, please cite both the paper and the software:
 
-> Workineh Z. G., Chemorion F. K. & Noailly J. (2026). *A systems-level network model reveals how mechanical loading organizes regulatory states and transitions in nucleus pulposus cells.*
+> Workineh Z. G., Chemorion F. K. & Noailly J. (2026). *A systems-level network model reveals mechanical regulation of nucleus pulposus cell states.*
 
 Software citation: see `CITATION.cff`.
 

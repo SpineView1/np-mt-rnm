@@ -56,9 +56,9 @@ def test_export_produces_valid_sbml(tmp_path):
     # Rate rules: one per non-boundary species (147 - 3 = 144).
     assert m.getNumRules() == 144
 
-    # NutD lost all its edges in the 2026-09 revision but is NOT an input:
-    # MATLAB gives an unregulated node omega = 0, so dX/dt = -X and it decays
-    # to 0. It must therefore still carry a rate rule.
+    # NutD is a network node, not a mechanical input, so it carries a rate
+    # rule. (In the 353-edge revision it has no regulators; MATLAB then gives
+    # omega = 0, dX/dt = -X, so it must still not be frozen as boundary.)
     nutd = m.getSpecies("NutD")
     assert nutd is not None and not nutd.getBoundaryCondition()
     assert any(m.getRule(i).getVariable() == "NutD" for i in range(m.getNumRules()))

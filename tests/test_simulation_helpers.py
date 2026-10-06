@@ -5,24 +5,45 @@ import pytest
 from np_mt_rnm.network import load_network
 from np_mt_rnm.simulation import (
     REGIME_PRESETS,
+    REGIME_SEEDS,
     build_clamps,
+    matlab_rand,
 )
 from pathlib import Path
 
 DATA_XLSX = Path(__file__).resolve().parents[1] / "data" / "MT_PRIMARY4_1.xlsx"
 
 
-def test_regime_presets_match_matlab():
-    """Mirrors the clamp constants in the two MATLAB scripts.
+def test_regime_presets_match_paper():
+    """Paper Section 2.2 and RESCUE_NEW4_1_final.m:109-111.
 
-    NP_MT_RNM_FALSIFY4_1.m:51-53 sets the baseline/falsification regimes and
-    RESCUE_NEW4_1_final.m:109-111 sets the rescue ones. They agree on Hypo and
-    Normal but differ on NL in Hyper (0.10 vs 0.01), so both are kept.
+    NP_MT_RNM_FALSIFY4_1.m:53 uses NL = 0.10 for Hyper; the paper states
+    Hypo = NL = 0.01, which is what we follow.
     """
-    assert REGIME_PRESETS["Hypo"] == {"Hypo": 0.20, "NL": 0.01, "HL": 0.01}
-    assert REGIME_PRESETS["Normal"] == {"Hypo": 0.01, "NL": 0.80, "HL": 0.01}
-    assert REGIME_PRESETS["Hyper"] == {"Hypo": 0.01, "NL": 0.10, "HL": 0.80}
-    assert REGIME_PRESETS["Hyper_rescue"] == {"Hypo": 0.01, "NL": 0.01, "HL": 0.80}
+    assert REGIME_PRESETS == {
+        "Hypo": {"Hypo": 0.20, "NL": 0.01, "HL": 0.01},
+        "Normal": {"Hypo": 0.01, "NL": 0.80, "HL": 0.01},
+        "Hyper": {"Hypo": 0.01, "NL": 0.01, "HL": 0.80},
+    }
+
+
+def test_regime_seeds_match_rescue_script():
+    """rng(BASE_SEED + offset + r, 'twister') with BASE_SEED = 1, r = 1..100."""
+    assert REGIME_SEEDS == {"Hypo": 1002, "Normal": 2002, "Hyper": 3002}
+
+
+def test_matlab_rand_matches_matlab_twister():
+    """First MT19937 doubles for init_genrand(1), i.e. rng(1,'twister'); rand(3,1).
+
+    The end-to-end proof that the streams agree is tests/test_paper_reproduction.py:
+    the rescue percentages only match the manuscript with these draws.
+    """
+    import numpy as np
+
+    np.testing.assert_array_equal(
+        matlab_rand(3, 1),
+        [0.417022004702574, 0.7203244934421581, 0.00011437481734488664],
+    )
 
 
 def test_build_clamps_marks_regime_inputs():
@@ -67,7 +88,7 @@ def test_run_replicates_honors_supplied_initial_states():
     net = load_network(DATA_XLSX)
     n = len(net.node_names)
 
-    first = run_replicates(net, regime=REGIME_PRESETS["Hyper"], n_reps=3, seed=0, n_jobs=1)
+    first = run_replicates(net, regime=REGIME_PRESETS["Hyper"], n_reps=3, seed=3002, n_jobs=1)
     # Re-integrating a converged state must leave it where it is.
     second = run_replicates(
         net,

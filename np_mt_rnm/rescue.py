@@ -20,7 +20,7 @@ from typing import Iterator
 import numpy as np
 
 from np_mt_rnm.network import Network
-from np_mt_rnm.simulation import REGIME_PRESETS, ReplicateEnsemble, run_replicates
+from np_mt_rnm.simulation import REGIME_PRESETS, REGIME_SEEDS, ReplicateEnsemble, run_replicates
 
 # Using the Excel's exact Greek-letter node names.
 CATABOLIC_DOWN_NODES: tuple[str, ...] = ("RhoA-E", "PIEZO1", "PI3K-E", "FAK-E", "ROS")
@@ -76,7 +76,7 @@ def run_perturbation(
     anabolic_up: str | None,
     catabolic_down: str | None,
     n_reps: int,
-    seed: int = 0,
+    seed: int = REGIME_SEEDS["Hyper"],
     n_jobs: int = -1,
     baseline: ReplicateEnsemble | None = None,
 ) -> PerturbationResult:
@@ -95,7 +95,7 @@ def run_perturbation(
     screen shares one baseline; pass it in to reproduce that (and halve the
     solver work). When omitted, a fresh baseline is solved for this call.
     """
-    hyper = REGIME_PRESETS["Hyper_rescue"]
+    hyper = REGIME_PRESETS["Hyper"]
     clamps: dict[str, float] = {}
     if anabolic_up is not None:
         clamps[anabolic_up] = 1.0
