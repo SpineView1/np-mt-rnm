@@ -11,6 +11,7 @@ SBML-Level-3 simulator.
 """
 from __future__ import annotations
 
+from html import escape
 from pathlib import Path
 
 import numpy as np
@@ -20,6 +21,7 @@ try:
 except ImportError:
     libsbml = None
 
+from np_mt_rnm import paper
 from np_mt_rnm.network import Network
 from np_mt_rnm.simulation import MECHANICAL_INPUTS
 
@@ -213,9 +215,17 @@ def export_sbml(
             continue
         rule.setMath(ast)
 
+    # The paper's own title, authors, abstract and keywords, verbatim, so any
+    # SBML viewer (and the webapp's Abstract tab) shows the manuscript's words.
     notes = (
         '<body xmlns="http://www.w3.org/1999/xhtml">'
-        f"<h1>{model_name}</h1>"
+        f"<h1>{escape(paper.TITLE)}</h1>"
+        f"<p>{escape(', '.join(paper.AUTHORS))}</p>"
+        f"<p><em>{escape(paper.AFFILIATION)}</em></p>"
+        "<h2>Abstract</h2>"
+        f"<p>{escape(paper.ABSTRACT)}</p>"
+        f"<p><strong>Keywords:</strong> {escape(', '.join(paper.KEYWORDS))}</p>"
+        f"<h2>{escape(model_name)}</h2>"
         f"<p>{n} nodes, {int(network.mact.sum())} activation edges, "
         f"{int(network.minh.sum())} inhibition edges.</p>"
         "<p>Mathematical framework: Mendoza/SQUADS ODE "

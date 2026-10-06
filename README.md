@@ -4,7 +4,15 @@
 
 Workineh Z. G.<sup>1</sup>, Chemorion F. K.<sup>1</sup>, Noailly J.<sup>1</sup>
 
-<sup>1</sup>BCN MedTech, Universitat Pompeu Fabra, Barcelona, Spain
+<sup>1</sup>Barcelona Centre for New Medical Technologies (BCN MedTech), Department of Engineering, Universitat Pompeu Fabra, Barcelona, 08018, Spain
+
+---
+
+## Abstract
+
+Intervertebral disc degeneration (IDD) is a leading cause of chronic low back pain and is strongly influenced by mechanical loading–dependent regulation of nucleus pulposus (NP) cell phenotype. Although individual mechanosensors and signaling pathways have been characterized, the systems-level principles governing how NP cells integrate mechanical cues into coordinated regulatory states remain unclear. Here, we present a systems-level regulatory network model of NP mechanotransduction comprising 147 molecular nodes and 356 experimentally supported interactions spanning mechanosensory inputs, signaling cascades, metabolic and redox regulators, transcription factors, extracellular matrix (ECM) effectors, inflammatory mediators, and cell-fate modules. Mechanical environments are represented as hypo-, normal-, and hyper-loading inputs that initiate distinct signaling programs. Semi-quantitative regulatory network simulations reveal three stable regimes: a hypo-loading state characterized by reduced ECM-anabolic activity, impaired adhesion-mediated survival signaling, and metabolic stress with features consistent with an anoikis-like phenotype; a normal-loading state associated with coordinated ECM maintenance, metabolic balance, and redox stability; and a hyper-loading state dominated by inflammatory amplification, oxidative stress, matrix degradation, and apoptosis. Falsification tests against independent experimental data demonstrate high directional concordance (~95%), supporting the biological plausibility of the network. Systematic perturbation analysis further identifies a distributed control structure in which mechanotransductive, redox, and transcriptional regulators jointly determine state stability, with combined attenuation of mechanically driven and stress-amplifying pathways together with activation of anabolic or cytoprotective programs most effectively restoring normal-like states. These findings provide a systems-level framework for understanding load-dependent NP cell regulation and for guiding multi-target therapeutic strategies in intervertebral disc mechanobiology.
+
+**Keywords:** Nucleus pulposus, Mechanotransduction, Regulatory network modeling, Mechanical loading, Intervertebral disc degeneration, Systems biology, Network control
 
 ---
 
@@ -205,11 +213,11 @@ Full reproduction takes about 4 minutes on 10 cores (dominated by the rescue scr
 | Fig. 7 — representative transition trajectories | `Representative_transition_paths.png` |
 | Fig. 8 — falsification | `NP_MT_FALS.png` |
 | Fig. 9 — ECM rescue ranking | `ECM_rescue.png` |
-| Supp. S5 — transition heatmaps | `TF_transition.png`, `GF_transition.png`, `CYT_transition.png`, `OXI_transition.png`, `CSF_transition.png` |
-| Supp. S6 — rescue rankings | `GF_rescue.png`, `TF_rescue.png`, `CYT_rescue.png`, `OXI_rescue.png`, `CSF_rescue.png` |
-| Supp. S6 — node-resolved rescue responses | `ECM_rescue1.png`, `GF_rescue1.png`, `TF_rescue1.png`, `CYT_rescue1.png`, `OXI_rescue1.png`, `CSF_rescue1.png` |
+| Figs. S2–S6 — transition heatmaps | `TF_transition.png`, `GF_transition.png`, `CYT_transition.png`, `OXI_transition.png`, `CSF_transition.png` |
+| Figs. S7–S11 — rescue rankings | `GF_rescue.png`, `TF_rescue.png`, `CYT_rescue.png`, `OXI_rescue.png`, `CSF_rescue.png` |
+| Figs. S12–S17 — node-resolved rescue responses | `ECM_rescue1.png`, `GF_rescue1.png`, `TF_rescue1.png`, `CYT_rescue1.png`, `OXI_rescue1.png`, `CSF_rescue1.png` |
 
-Figures 1–2 and Supplementary S1 (pathway schematic, Cytoscape network drawing, curation pipeline) are illustrations, not model output.
+Figures 1–2 and Figure S1 (pathway schematic, Cytoscape network drawing, curation pipeline) are illustrations, not model output.
 
 ---
 

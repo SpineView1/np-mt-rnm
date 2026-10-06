@@ -82,3 +82,15 @@ def test_simulate_via_tellurium_normal_regime(tmp_path):
     ros_final = res["[ROS]"][-1]
     assert sox9_final > 0.5, f"SOX9 should be high under Normal, got {sox9_final}"
     assert ros_final < 0.1,  f"ROS should be low under Normal, got {ros_final}"
+
+
+def test_sbml_notes_carry_the_manuscript_abstract(tmp_path):
+    """The model notes (shown as the webapp's Abstract tab) are the paper's words."""
+    libsbml = pytest.importorskip("libsbml")
+    from np_mt_rnm import paper
+
+    out = tmp_path / "model.xml"
+    assert export_sbml(load_network(DATA), out)
+    notes = libsbml.readSBML(str(out)).getModel().getNotesString()
+    for text in (paper.TITLE, paper.ABSTRACT, paper.AFFILIATION, *paper.AUTHORS):
+        assert text in notes

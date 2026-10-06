@@ -13,6 +13,7 @@ from pathlib import Path
 
 import pandas as pd
 
+from np_mt_rnm import paper
 from np_mt_rnm.categories import CATEGORY_LABELS, nodes_in_category
 from np_mt_rnm.transitions import HYPO_TO_NORMAL_PATH, NORMAL_TO_HYPER_PATH
 
@@ -162,6 +163,16 @@ def main() -> None:
         "falsification": {"ftol": 0.02, "n_boot": 10000, "rules": falsification},
         "rescue": rescue,
         "category_labels": CATEGORY_LABELS,
+        # Manuscript figure numbers and captions, verbatim (np_mt_rnm/paper.py).
+        "figures": {k: {"number": n, "caption": c} for k, (n, c) in paper.FIGURES.items()},
+        "node_resolved_intro": paper.NODE_RESOLVED_INTRO,
+        "paper": {
+            "title": paper.TITLE,
+            "authors": list(paper.AUTHORS),
+            "affiliation": paper.AFFILIATION,
+            "keywords": list(paper.KEYWORDS),
+            "abstract": paper.ABSTRACT,
+        },
     }
     OUT.write_text(json.dumps(bundle, ensure_ascii=False, default=_clean))
     print(f"[paper-bundle] wrote {OUT.relative_to(ROOT)} ({OUT.stat().st_size // 1024} KB)")
