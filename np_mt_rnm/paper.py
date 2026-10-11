@@ -1,6 +1,6 @@
 """Manuscript metadata, verbatim from the manuscript sources.
 
-Source: NP_MT1.tex and NP_MT_SUP1.tex (manuscript version of 2026-10-06).
+Source: NP_MT1.tex and NP_MT_SUP1.tex (manuscript version of 2026-10-11).
 Text is copied word for word; only LaTeX markup is translated (``\\%`` -> ``%``,
 ``$\\Delta$`` -> ``Δ``, ``\\textbf{A}`` -> ``A``). Used for the SBML model notes,
 the webapp and the README so that all of them carry the manuscript's own words.
@@ -36,7 +36,6 @@ KEYWORDS: tuple[str, ...] = (
     "Network control",
 )
 
-# The source writes "(~95\%)"; "~" is shown as written.
 ABSTRACT = (
     "Intervertebral disc degeneration (IDD) is a leading cause of chronic low back "
     "pain and is strongly influenced by mechanical loading–dependent regulation of "
@@ -44,7 +43,7 @@ ABSTRACT = (
     "signaling pathways have been characterized, the systems-level principles "
     "governing how NP cells integrate mechanical cues into coordinated regulatory "
     "states remain unclear. Here, we present a systems-level regulatory network "
-    "model of NP mechanotransduction comprising 147 molecular nodes and 356 "
+    "model of NP mechanotransduction comprising 146 molecular nodes and 353 "
     "experimentally supported interactions spanning mechanosensory inputs, "
     "signaling cascades, metabolic and redox regulators, transcription factors, "
     "extracellular matrix (ECM) effectors, inflammatory mediators, and cell-fate "
@@ -58,7 +57,7 @@ ABSTRACT = (
     "a hyper-loading state dominated by inflammatory amplification, oxidative "
     "stress, matrix degradation, and apoptosis. Falsification tests against "
     "independent experimental data demonstrate high directional concordance "
-    "(~95%), supporting the biological plausibility of the network. Systematic "
+    "(∼95%), supporting the biological plausibility of the network. Systematic "
     "perturbation analysis further identifies a distributed control structure in "
     "which mechanotransductive, redox, and transcriptional regulators jointly "
     "determine state stability, with combined attenuation of mechanically driven "
@@ -70,25 +69,25 @@ ABSTRACT = (
 )
 
 # Figure number and caption (HTML) for every computational figure, keyed by the
-# manuscript's file name. Main-text figures are numbered 1-9; supplementary
+# manuscript's file name. Main-text figures are numbered 1-10; supplementary
 # figures S1-S17 in NP_MT_SUP1.tex order.
 _NODE_RESOLVED = "Node-resolved perturbation responses within the {}."
 FIGURES: dict[str, tuple[str, str]] = {
     "TOPO_STATS": (
-        "Figure 3",
-        "Topological metrics of the NP mechanotransduction network.(A) nodes ranked "
-        "by signed out-degree,(B) nodes ranked by betweenness centrality, and (C) "
+        "Figure 4",
+        "Topological metrics of the NP mechanotransduction network. (A) nodes ranked "
+        "by signed out-degree, (B) nodes ranked by betweenness centrality, and (C) "
         "nodes ranked by harmonic closeness centrality.",
     ),
     "BSL_ECM_GF": (
-        "Figure 4",
+        "Figure 5",
         "Baseline steady-state responses under Hypo (blue), Normal (green), and Hyper "
         "(red) loading. (<b>A</b>) ECM anabolism and phenotype markers; (<b>B</b>) "
         "Growth factors; (<b>C</b>) Transcription factors; (<b>D</b>) Cytokines, "
         "chemokines, proteases, and related mediators.",
     ),
     "BSL_MET_OXI": (
-        "Figure 5",
+        "Figure 6",
         "Baseline steady-state responses under Hypo (blue), Normal (green), and Hyper "
         "(red) loading. (<b>A</b>) Metabolic and signaling intermediates; (<b>B</b>) "
         "Ion channels and calcium-dependent pathways; (<b>C</b>) Oxidative-stress "
@@ -96,23 +95,23 @@ FIGURES: dict[str, tuple[str, str]] = {
         "mitochondrial stress modules.",
     ),
     "ECM_transition": (
-        "Figure 6",
+        "Figure 7",
         "Transition heatmaps of ECM anabolism and phenotype markers along constrained "
-        "loading paths. (A) Hypo-to-Normal transition. (B) Normal-to-Hyper "
+        "loading paths. (A) Hypo-to-NL transition. (B) NL-to-HL "
         "transition. Values represent mean steady-state activation levels at each "
         "path step.",
     ),
     "Representative_transition_paths": (
-        "Figure 7",
+        "Figure 8",
         "Representative node trajectories along constrained loading paths. (A) "
-        "Hypo-to-Normal transition. (B) Normal-to-Hyper transition. Selected nodes "
+        "Hypo-to-NL transition. (B) NL-to-HL transition. Selected nodes "
         "span ECM phenotype markers, transcriptional regulators, inflammatory and "
         "oxidative-stress mediators, growth factors, and cell survival/apoptosis "
         "regulators. Values represent mean steady-state activation levels at each "
         "path step.",
     ),
     "NP_MT_FALS": (
-        "Figure 8",
+        "Figure 9",
         "Directional agreement and uncertainty in the Normal-to-Hyper falsification "
         "benchmark. (A) Directional effects for benchmarked nodes, expressed as "
         "Δ=x̄<sub>Normal</sub>−x̄<sub>Hyper</sub>. Dashed horizontal lines indicate "
@@ -120,13 +119,8 @@ FIGURES: dict[str, tuple[str, str]] = {
         "confidence intervals for Δ based on N<sub>boot</sub>=10,000 resamples.",
     ),
     "ECM_rescue": (
-        "Figure 9",
-        "Top 20 Hyper-to-Normal rescue interventions for ECM anabolism and phenotype "
-        "markers. Interventions are ranked by the percentage reduction in Euclidean "
-        "distance between the ensemble-mean perturbed module profile and the "
-        "Normal-loading reference profile relative to the original Hyper-to-Normal "
-        "distance. Larger positive values indicate greater restoration toward the "
-        "Normal state.",
+        "Figure 10",
+        "Top 20 HL-to-NL rescue interventions for ECM anabolism and phenotype markers.",
     ),
     "TF_transition": ("Figure S2", "Transition heatmaps of transcription-factor activity."),
     "GF_transition": ("Figure S3", "Transition heatmaps of growth-factor signaling."),
@@ -183,7 +177,9 @@ NODE_RESOLVED_INTRO = (
     "mean node-level response across all screened perturbations. Panel B shows the "
     "10 highest-ranked perturbations according to the mean absolute node-level "
     "change within the indicated module. Panels C and D show the node-level "
-    "response profiles for the highest-ranked dual- and single-node perturbations, "
-    "respectively. Mean absolute change measures the magnitude of the perturbation "
-    "response and is separate from the Hyper-to-Normal rescue metric used above."
+    "response profiles for a leading dual-node perturbation selected from the "
+    "top-ranked interventions in panel B and for the highest-ranked single-node "
+    "perturbation, respectively. Mean absolute change measures the magnitude of the "
+    "perturbation response and is separate from the Hyper-to-Normal rescue metric "
+    "used above."
 )

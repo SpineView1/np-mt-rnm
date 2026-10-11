@@ -45,7 +45,7 @@ def test_export_produces_valid_sbml(tmp_path):
     doc = reader.readSBML(str(out))
     assert doc.getNumErrors() == 0
     m = doc.getModel()
-    assert m.getNumSpecies() == 147
+    assert m.getNumSpecies() == 146
     # Boundary species are exactly the 3 mechanical loading inputs.
     boundary = sorted(
         m.getSpecies(i).getId()
@@ -53,15 +53,9 @@ def test_export_produces_valid_sbml(tmp_path):
         if m.getSpecies(i).getBoundaryCondition()
     )
     assert boundary == sorted(["Hypo", "NL", "HL"])
-    # Rate rules: one per non-boundary species (147 - 3 = 144).
-    assert m.getNumRules() == 144
+    # Rate rules: one per non-boundary species (146 - 3 = 143).
+    assert m.getNumRules() == 143
 
-    # NutD is a network node, not a mechanical input, so it carries a rate
-    # rule. (In the 353-edge revision it has no regulators; MATLAB then gives
-    # omega = 0, dX/dt = -X, so it must still not be frozen as boundary.)
-    nutd = m.getSpecies("NutD")
-    assert nutd is not None and not nutd.getBoundaryCondition()
-    assert any(m.getRule(i).getVariable() == "NutD" for i in range(m.getNumRules()))
 
 
 def test_simulate_via_tellurium_normal_regime(tmp_path):

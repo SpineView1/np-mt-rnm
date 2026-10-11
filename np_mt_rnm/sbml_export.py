@@ -102,7 +102,7 @@ def export_sbml(
     Parameters
     ----------
     network : Network
-        Loaded np-mt-rnm Network (147 nodes).
+        Loaded np-mt-rnm Network.
     filepath : str | Path
         Output SBML file path.
     initial_values : ndarray | None
@@ -173,10 +173,9 @@ def export_sbml(
         seen[sanitized[idx]] = idx
 
     # Boundary nodes = the three mechanical loading stimuli, named explicitly.
-    # This used to be inferred as "no activators AND no inhibitors", which
-    # coincided until the 2026-09 revision disconnected NutD. NutD is not an
-    # input: MATLAB gives an unregulated node omega = 0, hence dX/dt = -X, so
-    # it must keep a rate rule and decay to 0 rather than be frozen.
+    # Do not infer them as "no activators AND no inhibitors": MATLAB gives an
+    # unregulated node omega = 0, hence dX/dt = -X, so such a node must keep a
+    # rate rule and decay to 0 rather than be frozen.
     missing_inputs = [name for name in MECHANICAL_INPUTS if name not in network.node_names]
     if missing_inputs:
         raise ValueError(f"network is missing mechanical input nodes: {missing_inputs}")

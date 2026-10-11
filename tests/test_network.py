@@ -12,9 +12,9 @@ from np_mt_rnm.network import load_network
 DATA_XLSX = Path(__file__).resolve().parents[1] / "data" / "MT_PRIMARY4_1.xlsx"
 
 
-def test_load_network_returns_147_nodes():
+def test_load_network_returns_146_nodes():
     net = load_network(DATA_XLSX)
-    assert len(net.node_names) == 147, f"expected 147 nodes, got {len(net.node_names)}"
+    assert len(net.node_names) == 146, f"expected 146 nodes, got {len(net.node_names)}"
 
 
 def test_load_network_mact_minh_shapes():
@@ -45,30 +45,20 @@ def test_load_network_stimuli_includes_hypo_nl_hl():
 
 
 def test_load_network_edge_count_matches_excel():
-    """Pins the network the manuscript's figures were generated with.
+    """The network is the 353-interaction corpus (Supplementary Data 1).
 
-    357 directed edges (281 activation + 76 inhibition). Every rescue
-    percentage printed in the manuscript (text and Top-20 figures) is
-    reproduced to the printed decimal with this network and not with the
-    353-edge 2026-09 revision, which removed NutD's four edges; see
-    tests/test_paper_reproduction.py.
+    353 directed interactions (277 activation + 76 inhibition) between 146
+    nodes. An earlier 357-edge version also had four NutD interactions
+    (Hypo->NutD, NutD->HIF-1a, NutD->MitD, NutD->ROS); they are not part of the
+    curated corpus, so they and the NutD node were removed.
     """
     net = load_network(DATA_XLSX)
-    assert int(net.mact.sum()) == 281
+    assert int(net.mact.sum()) == 277
     assert int(net.minh.sum()) == 76
-    assert int(net.mact.sum() + net.minh.sum()) == 357
+    assert int(net.mact.sum() + net.minh.sum()) == 353
 
 
-def test_nutd_edges_present():
-    """The four NutD edges dropped in the 353-edge revision are present."""
+def test_nutd_removed():
+    """NutD had no interactions left in the corpus, so it is not a node."""
     net = load_network(DATA_XLSX)
-    idx = {n: k for k, n in enumerate(net.node_names)}
-    for target, regulator in (
-        ("NutD", "Hypo"),
-        ("HIF-1\u03b1", "NutD"),
-        ("MitD", "NutD"),
-        ("ROS", "NutD"),
-    ):
-        assert net.mact[idx[target], idx[regulator]] == 1, (
-            f"edge {regulator} -> {target} missing"
-        )
+    assert "NutD" not in net.node_names

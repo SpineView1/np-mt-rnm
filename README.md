@@ -10,7 +10,7 @@ Workineh Z. G.<sup>1</sup>, Chemorion F. K.<sup>1</sup>, Noailly J.<sup>1</sup>
 
 ## Abstract
 
-Intervertebral disc degeneration (IDD) is a leading cause of chronic low back pain and is strongly influenced by mechanical loading–dependent regulation of nucleus pulposus (NP) cell phenotype. Although individual mechanosensors and signaling pathways have been characterized, the systems-level principles governing how NP cells integrate mechanical cues into coordinated regulatory states remain unclear. Here, we present a systems-level regulatory network model of NP mechanotransduction comprising 147 molecular nodes and 356 experimentally supported interactions spanning mechanosensory inputs, signaling cascades, metabolic and redox regulators, transcription factors, extracellular matrix (ECM) effectors, inflammatory mediators, and cell-fate modules. Mechanical environments are represented as hypo-, normal-, and hyper-loading inputs that initiate distinct signaling programs. Semi-quantitative regulatory network simulations reveal three stable regimes: a hypo-loading state characterized by reduced ECM-anabolic activity, impaired adhesion-mediated survival signaling, and metabolic stress with features consistent with an anoikis-like phenotype; a normal-loading state associated with coordinated ECM maintenance, metabolic balance, and redox stability; and a hyper-loading state dominated by inflammatory amplification, oxidative stress, matrix degradation, and apoptosis. Falsification tests against independent experimental data demonstrate high directional concordance (~95%), supporting the biological plausibility of the network. Systematic perturbation analysis further identifies a distributed control structure in which mechanotransductive, redox, and transcriptional regulators jointly determine state stability, with combined attenuation of mechanically driven and stress-amplifying pathways together with activation of anabolic or cytoprotective programs most effectively restoring normal-like states. These findings provide a systems-level framework for understanding load-dependent NP cell regulation and for guiding multi-target therapeutic strategies in intervertebral disc mechanobiology.
+Intervertebral disc degeneration (IDD) is a leading cause of chronic low back pain and is strongly influenced by mechanical loading–dependent regulation of nucleus pulposus (NP) cell phenotype. Although individual mechanosensors and signaling pathways have been characterized, the systems-level principles governing how NP cells integrate mechanical cues into coordinated regulatory states remain unclear. Here, we present a systems-level regulatory network model of NP mechanotransduction comprising 146 molecular nodes and 353 experimentally supported interactions spanning mechanosensory inputs, signaling cascades, metabolic and redox regulators, transcription factors, extracellular matrix (ECM) effectors, inflammatory mediators, and cell-fate modules. Mechanical environments are represented as hypo-, normal-, and hyper-loading inputs that initiate distinct signaling programs. Semi-quantitative regulatory network simulations reveal three stable regimes: a hypo-loading state characterized by reduced ECM-anabolic activity, impaired adhesion-mediated survival signaling, and metabolic stress with features consistent with an anoikis-like phenotype; a normal-loading state associated with coordinated ECM maintenance, metabolic balance, and redox stability; and a hyper-loading state dominated by inflammatory amplification, oxidative stress, matrix degradation, and apoptosis. Falsification tests against independent experimental data demonstrate high directional concordance (∼95%), supporting the biological plausibility of the network. Systematic perturbation analysis further identifies a distributed control structure in which mechanotransductive, redox, and transcriptional regulators jointly determine state stability, with combined attenuation of mechanically driven and stress-amplifying pathways together with activation of anabolic or cytoprotective programs most effectively restoring normal-like states. These findings provide a systems-level framework for understanding load-dependent NP cell regulation and for guiding multi-target therapeutic strategies in intervertebral disc mechanobiology.
 
 **Keywords:** Nucleus pulposus, Mechanotransduction, Regulatory network modeling, Mechanical loading, Intervertebral disc degeneration, Systems biology, Network control
 
@@ -38,9 +38,9 @@ The model is **multistable**, so ensemble means depend on which initial states a
 
 | Property | Value |
 |---|---|
-| Nodes (proteins, ions, ECM components, mechanical inputs) | 147 |
-| Directed interactions | 357 |
-| &nbsp;&nbsp;&nbsp;&nbsp;Activation edges | 281 |
+| Nodes (proteins, ions, ECM components, mechanical inputs) | 146 |
+| Directed interactions | 353 |
+| &nbsp;&nbsp;&nbsp;&nbsp;Activation edges | 277 |
 | &nbsp;&nbsp;&nbsp;&nbsp;Inhibition edges | 76 |
 | Mechanical loading inputs (boundary species) | 3 (Hypo, NL, HL) |
 | Functional categories (visualization groups) | 12 |
@@ -129,7 +129,8 @@ np-mt-rnm/
 ├── CITATION.cff
 │
 ├── data/
-│   ├── MT_PRIMARY4_1.xlsx          # 147 nodes, 357 edges (network used for the manuscript)
+│   ├── MT_PRIMARY4_1.xlsx          # model network: 146 nodes, 353 interactions
+│   ├── NP-MT-RNM_Supplementary_Data_1_Interaction_Corpus.xlsx  # literature corpus behind every interaction
 │   └── falsification_benchmark.csv # 45 curated rules
 │
 ├── np_mt_rnm/                      # installable Python package
@@ -142,7 +143,7 @@ np-mt-rnm/
 │   ├── rescue.py                   # 35-perturbation screen
 │   ├── statistics.py               # Cohen's d, bootstrap, permutation, BH-FDR
 │   ├── topology.py                 # signed out-degree, betweenness, harmonic closeness
-│   ├── categories.py               # functional-category map for all 147 nodes
+│   ├── categories.py               # functional-category map for all 146 nodes
 │   ├── figures.py                  # matplotlib code matching paper's visual style
 │   └── sbml_export.py              # libsbml writer (rate rules)
 │
@@ -206,18 +207,18 @@ Full reproduction takes about 4 minutes on 10 cores (dominated by the rescue scr
 
 | Manuscript figure | File in `results/figures/paper/` |
 |---|---|
-| Fig. 3 — topological metrics | `TOPO_STATS.png` |
-| Fig. 4 — baseline: ECM, growth factors, TFs, cytokines | `BSL_ECM_GF.png` |
-| Fig. 5 — baseline: metabolic, ion channels, oxidative stress, cell fate | `BSL_MET_OXI.png` |
-| Fig. 6 — ECM transition heatmaps | `ECM_transition.png` |
-| Fig. 7 — representative transition trajectories | `Representative_transition_paths.png` |
-| Fig. 8 — falsification | `NP_MT_FALS.png` |
-| Fig. 9 — ECM rescue ranking | `ECM_rescue.png` |
+| Fig. 4 — topological metrics | `TOPO_STATS.png` |
+| Fig. 5 — baseline: ECM, growth factors, TFs, cytokines | `BSL_ECM_GF.png` |
+| Fig. 6 — baseline: metabolic, ion channels, oxidative stress, cell fate | `BSL_MET_OXI.png` |
+| Fig. 7 — ECM transition heatmaps | `ECM_transition.png` |
+| Fig. 8 — representative transition trajectories | `Representative_transition_paths.png` |
+| Fig. 9 — falsification | `NP_MT_FALS.png` |
+| Fig. 10 — ECM rescue ranking | `ECM_rescue.png` |
 | Figs. S2–S6 — transition heatmaps | `TF_transition.png`, `GF_transition.png`, `CYT_transition.png`, `OXI_transition.png`, `CSF_transition.png` |
 | Figs. S7–S11 — rescue rankings | `GF_rescue.png`, `TF_rescue.png`, `CYT_rescue.png`, `OXI_rescue.png`, `CSF_rescue.png` |
 | Figs. S12–S17 — node-resolved rescue responses | `ECM_rescue1.png`, `GF_rescue1.png`, `TF_rescue1.png`, `CYT_rescue1.png`, `OXI_rescue1.png`, `CSF_rescue1.png` |
 
-Figures 1–2 and Figure S1 (pathway schematic, Cytoscape network drawing, curation pipeline) are illustrations, not model output.
+Figures 1–3 and Figure S1 (pathway schematic, analysis workflow, Cytoscape network drawing, curation pipeline) are illustrations, not model output.
 
 ---
 
@@ -264,8 +265,8 @@ The repository ships a pre-generated `model.xml` (SBML Level 3 Version 2) encodi
 d[species]/dt = sigmoid(omega(activators, inhibitors); h) - gamma * [species]
 ```
 
-- **Species count:** 147 (one per network node).
-- **Floating species:** 144 (carry rate rules).
+- **Species count:** 146 (one per network node).
+- **Floating species:** 143 (carry rate rules).
 - **Boundary species:** 3 — `Hypo`, `NL`, `HL`. Marked `boundaryCondition=true` so any SBML loader can clamp them via `runner["Hypo"] = value` (or equivalent), reproducing the three loading regimes without modifying the model.
 - **Global parameters:** `h = 10`, `gamma = 1`.
 - **Validation:** validates clean (`document.checkConsistency()` returns 0 errors).
@@ -330,18 +331,20 @@ Tests encode the paper's biological claims as invariants:
 - **Paper reproduction** — every rescue percentage printed in the manuscript, to the printed decimal; top-ranked intervention per module.
 - **Falsification** — exactly 43/45, failing TonEBP and HSF1.
 - **MATLAB RNG** — `matlab_rand` returns MT19937 `init_genrand` draws, as `rng(seed, 'twister'); rand`.
-- **Network loader** — 147 nodes, 357 edges (281 activation, 76 inhibition); binary adjacency; no activator/inhibitor overlap.
+- **Network loader** — 146 nodes, 353 interactions (277 activation, 76 inhibition); binary adjacency; no activator/inhibitor overlap.
 - **SQUADS ODE** — hand-computed reference values to 12-digit precision.
-- **Regime polarities** (Figs. 4–5) — `ACAN[Normal] > 0.8`; `MMP13[Hyper] > 0.8`; `TNF / IL6` near zero under Normal.
+- **Regime polarities** (Figs. 5–6) — `ACAN[Normal] > 0.8`; `MMP13[Hyper] > 0.8`; `TNF / IL6` near zero under Normal.
 - **Rescue top perturbations** — node-level response rankings (mean |Δ|) per module.
-- **Transition paths** (Figs. 6–7) — anabolic markers rise monotonically along Hypo → Normal.
+- **Transition paths** (Figs. 7–8) — anabolic markers rise monotonically along Hypo → Normal.
 - **SBML export** — `model.xml` validates clean; reloading via tellurium reproduces the Normal regime's SOX9-high / ROS-low signature.
 
 ---
 
 ## Network version
 
-`data/MT_PRIMARY4_1.xlsx` is the **357-edge** network that produced the manuscript's figures. A later revision of the spreadsheet (2026-09) removed the four `NutD` edges (`Hypo→NutD`, `NutD→HIF-1α`, `NutD→MitD`, `NutD→ROS`), leaving 353; with it the transcription-factor and oxidative-stress rescue percentages move by 0.1–0.3 points and no longer match the printed values. The repository follows the manuscript.
+`data/MT_PRIMARY4_1.xlsx` is the network simulated in the manuscript: 146 nodes and 353 signed interactions, exactly the interactions of the curated literature corpus (`data/NP-MT-RNM_Supplementary_Data_1_Interaction_Corpus.xlsx`, Supplementary Data 1 of the paper). The corpus gives, for every interaction, the supporting references (with DOI/PMID), the experimental context, an evidence review of 37 interactions and a Crossref retraction screen of all cited publications.
+
+An earlier version of the network had 357 interactions: four further interactions of a nutrient-deficiency node (`Hypo→NutD`, `NutD→HIF-1α`, `NutD→MitD`, `NutD→ROS`) that are not part of the curated corpus. They and the `NutD` node were removed. With MATLAB-seeded ensembles this changes five printed rescue values by 0.1–0.2 percentage points and leaves the falsification result (43/45) unchanged.
 
 The SQUADS activation term is implemented with the negative exponent, $e^{-h(\omega - 0.5)}$, exactly as in `legacy/ODESysFunS.m`.
 

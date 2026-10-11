@@ -150,7 +150,7 @@ def main() -> None:
     bundle = {
         "provenance": {
             "source": "np-mt-rnm results/tables (scripts/run_all.py)",
-            "network": "MT_PRIMARY4_1.xlsx, 147 nodes, 357 edges",
+            "network": "MT_PRIMARY4_1.xlsx, 146 nodes, 353 interactions",
             "seeding": "MATLAB twister seeds of RESCUE_NEW4_1_final.m (Hypo 1001+r, Normal 2001+r, Hyper 3001+r)",
         },
         "topology": topology,

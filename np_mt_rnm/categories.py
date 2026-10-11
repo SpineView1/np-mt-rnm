@@ -1,4 +1,4 @@
-"""Functional-category groupings for the 147 NP-MT network nodes.
+"""Functional-category groupings for the 146 NP-MT network nodes.
 
 Authoritative source: legacy/NP_MT_RNM_FALSIFY4_1.m lines 19–45.
 The MATLAB `group_categories` cell array is transcribed verbatim below,
@@ -72,7 +72,7 @@ _CATEGORY_TO_NODES: dict[str, list[str]] = {
         "PI3K-M", "PI3K-E", "PIP3-M", "PIP3-E", "PDK1-M", "PDK1-E",
         "AKT1-M", "AKT1-E", "GSK3B", "ULK1", "PTEN", "PLD2", "PGE2", "COX-2",
         "CAT", "GPX1", "SOD1", "SOD2", "HO-1", "PHD2", "VHL", "Rheb",
-        "NutD", "MitD",
+        "MitD",
     ],
     "ecm_matrix": [
         "COL2A1", "COL1A1", "COL10A1", "ACAN", "TIMP3",

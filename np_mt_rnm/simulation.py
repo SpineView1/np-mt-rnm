@@ -18,7 +18,7 @@ from np_mt_rnm.ode import squads_rhs
 # are externally driven rather than computed by the network, so they are the
 # only SBML boundary species. Do NOT infer this set from "has no regulators":
 # MATLAB gives any unregulated node omega = 0, so dX/dt = -X and it decays to
-# 0 rather than being held (this bit NutD in the 353-edge 2026-09 revision).
+# 0 rather than being held.
 MECHANICAL_INPUTS: tuple[str, ...] = ("Hypo", "NL", "HL")
 
 # Per paper Section 2.2: "normal loading was represented by NL = 0.8

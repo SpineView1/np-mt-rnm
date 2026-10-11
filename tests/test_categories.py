@@ -30,7 +30,7 @@ def test_every_node_has_at_least_one_category():
     net = load_network(DATA_XLSX)
     missing = [n for n in net.node_names if n not in NODE_CATEGORIES]
     assert not missing, (
-        f"{len(missing)} of 147 nodes have no category assignment:\n"
+        f"{len(missing)} of {len(net.node_names)} nodes have no category assignment:\n"
         + "\n".join(f"  - {n}" for n in missing)
     )
 

@@ -1,14 +1,12 @@
 """The rescue screen reproduces the manuscript to the printed decimal.
 
 Every value below is printed in the manuscript (Workineh, Chemorion & Noailly,
-Section 3.5) or as a bar label in its Top-20 rescue figures (ECM_rescue.png,
-GF_rescue.png, TF_rescue.png, CYT_rescue.png, OXI_rescue.png, CSF_rescue.png),
-which RESCUE_NEW4_1_final.m writes with sprintf('%.1f%%').
+Results, rescue screen) or as a bar label in its Top-20 rescue figures, which
+RESCUE_NEW4_1_final.m writes with sprintf('%.1f%%').
 
-The match is exact only when (i) initial states are MATLAB's twister draws with
-the rescue script's per-replicate seeds and (ii) the network is the 357-edge
-MT_PRIMARY4_1.xlsx. On the 353-edge 2026-09 revision the TF and OXI modules
-move by 0.1-0.3 points.
+The network is the 353-interaction, 146-node corpus (Supplementary Data 1).
+Initial states are MATLAB's twister draws with the rescue script's
+per-replicate seeds, so the same numbers come out of the MATLAB script.
 """
 from pathlib import Path
 
@@ -36,23 +34,52 @@ def _label(s: str) -> str:
 
 # category id -> {figure label: printed rescue %}
 PAPER = {
-    "ecm_matrix": {"SOX9-FAK-E": 90.5, "SOX9-ROS": 85.9, "SOX9": 82.8},
+    "ecm_matrix": {"SOX9-FAK-E": 90.5, "SOX9-ROS": 85.9, "SOX9-RhoA-E": 82.9, "SOX9": 82.8},
     "growth_factor": {"SOX9-FAK-E": 31.5, "SOX9": 20.7},
     "transcription_factor": {
-        "SOX9-ROS": 30.6, "PPARγ-ROS": 23.2, "SOX9-PIEZO1": 18.4, "IκBα-ROS": 17.4,
-        "SOX9-PI3K-E": 15.8, "SOX9": 15.5, "SOX9-FAK-E": 15.0, "NRF2-PIEZO1": 14.2,
-        "ROS": 12.4, "SOX9-RhoA-E": 12.4, "HIF-1α-ROS": 12.3, "PPARγ-PIEZO1": 12.0,
-        "NRF2-PI3K-E": 11.7, "NRF2-FAK-E": 11.4, "NRF2": 11.3, "NRF2-ROS": 11.3,
-        "PPARγ-FAK-E": 10.0, "PPARγ-PI3K-E": 9.3, "PPARγ": 9.3, "NRF2-RhoA-E": 8.4,
+        "SOX9-ROS": 30.7,
+        "PPARγ-ROS": 23.4,
+        "SOX9-PIEZO1": 18.3,
+        "IκBα-ROS": 17.6,
+        "SOX9-PI3K-E": 15.7,
+        "SOX9": 15.4,
+        "SOX9-FAK-E": 14.9,
+        "NRF2-PIEZO1": 14.4,
+        "ROS": 12.6,
+        "HIF-1α-ROS": 12.6,
+        "SOX9-RhoA-E": 12.3,
+        "PPARγ-PIEZO1": 12.0,
+        "NRF2-PI3K-E": 11.9,
+        "NRF2-FAK-E": 11.5,
+        "NRF2": 11.5,
+        "NRF2-ROS": 11.5,
+        "PPARγ-FAK-E": 10.0,
+        "PPARγ-PI3K-E": 9.3,
+        "PPARγ": 9.3,
+        "NRF2-RhoA-E": 8.6,
     },
     "cytokines_chemokines_proteases": {"SOX9-FAK-E": 22.4},
     "oxidative_proteostasis": {
-        "NRF2-PIEZO1": 60.3, "NRF2-RhoA-E": 60.3, "NRF2": 60.3, "NRF2-ROS": 60.3,
-        "NRF2-PI3K-E": 60.3, "NRF2-FAK-E": 59.0, "HIF-1α-FAK-E": 34.5,
-        "PPARγ-ROS": 28.1, "HIF-1α-ROS": 27.7, "SOX9-ROS": 27.7, "IκBα-ROS": 27.7,
-        "ROS": 27.7, "FAK-E": 23.7, "IκBα-FAK-E": 23.7, "SOX9-FAK-E": 23.7,
-        "PPARγ-FAK-E": 23.7, "HIF-1α-RhoA-E": 8.4, "HIF-1α-PI3K-E": 8.3,
-        "HIF-1α": 8.0, "HIF-1α-PIEZO1": 8.0,
+        "NRF2-PIEZO1": 60.4,
+        "NRF2-RhoA-E": 60.4,
+        "NRF2": 60.4,
+        "NRF2-ROS": 60.4,
+        "NRF2-PI3K-E": 60.3,
+        "NRF2-FAK-E": 59.1,
+        "HIF-1α-FAK-E": 34.2,
+        "PPARγ-ROS": 28.2,
+        "HIF-1α-ROS": 27.8,
+        "SOX9-ROS": 27.8,
+        "IκBα-ROS": 27.8,
+        "ROS": 27.8,
+        "FAK-E": 23.4,
+        "IκBα-FAK-E": 23.4,
+        "SOX9-FAK-E": 23.4,
+        "PPARγ-FAK-E": 23.4,
+        "HIF-1α-PI3K-E": 8.3,
+        "HIF-1α-RhoA-E": 8.3,
+        "HIF-1α": 8.0,
+        "HIF-1α-PIEZO1": 8.0,
     },
     "cell_fate": {"NRF2-PIEZO1": 37.5, "PPARγ-ROS": 34.9, "ROS": 34.2},
 }

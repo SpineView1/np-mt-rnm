@@ -2,7 +2,7 @@
 
 The MATLAB function reads an Excel file with columns
 [Nodes, Activators, Inhibitors, Stimuli] and builds signed adjacency
-matrices Mact (147x147) and Minh (147x147). This module reproduces that
+matrices Mact (N x N) and Minh (N x N). This module reproduces that
 behavior using pandas + numpy.
 """
 from __future__ import annotations

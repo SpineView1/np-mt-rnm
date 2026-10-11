@@ -103,7 +103,7 @@ def main() -> None:
         })
     pd.DataFrame(rows).to_csv(ROOT / "results" / "tables" / "rescue_summary.csv", index=False)
 
-    # Per-node deltas CSV (35 × 147).
+    # Per-node deltas CSV (35 perturbations × all nodes).
     per_node = np.stack([r.mean_delta for r in results])
     df = pd.DataFrame(per_node, columns=results[0].node_names)
     df.insert(0, "perturbation", [r.perturbation.label for r in results])
