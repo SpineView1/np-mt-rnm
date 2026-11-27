@@ -1,4 +1,6 @@
 """Tests for simulation.py helpers: regime presets, clamp construction."""
+from pathlib import Path
+
 import numpy as np
 import pytest
 
@@ -9,7 +11,6 @@ from np_mt_rnm.simulation import (
     build_clamps,
     matlab_rand,
 )
-from pathlib import Path
 
 DATA_XLSX = Path(__file__).resolve().parents[1] / "data" / "MT_PRIMARY4_1.xlsx"
 
@@ -38,7 +39,6 @@ def test_matlab_rand_matches_matlab_twister():
     The end-to-end proof that the streams agree is tests/test_paper_reproduction.py:
     the rescue percentages only match the manuscript with these draws.
     """
-    import numpy as np
 
     np.testing.assert_array_equal(
         matlab_rand(3, 1),
@@ -81,7 +81,6 @@ def test_run_replicates_honors_supplied_initial_states():
     perturbed run starts from replicate r's own Hyper steady state
     (run_reps_from_replicate_states_parallel in RESCUE_NEW4_1_48_targets_HQ.m).
     """
-    import numpy as np
     from np_mt_rnm.network import load_network
     from np_mt_rnm.simulation import REGIME_PRESETS, run_replicates
 

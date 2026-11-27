@@ -114,29 +114,29 @@ _NODE_RESOLVED_TAIL = (
 FIGURES: dict[str, tuple[str, str]] = {
     "TOPO_STATS": (
         "Figure 2",
-        "Topological metrics of the NP mechanotransduction network. (A) nodes ranked "
+        ("Topological metrics of the NP mechanotransduction network. (A) nodes ranked "
         "by signed out-degree, including the number of inhibitory (red) and "
         "activating (blue) outgoing edges, (B) nodes ranked by betweenness "
-        "centrality, and (C) nodes ranked by harmonic closeness centrality.",
+        "centrality, and (C) nodes ranked by harmonic closeness centrality."),
     ),
     "BSL_ECM_GF": (
         "Figure 3",
-        "Baseline mean activation under Hypo (blue), NL (green), and HL (red). Bars "
+        ("Baseline mean activation under Hypo (blue), NL (green), and HL (red). Bars "
         "represent means across 100 replicate simulations per condition; error bars "
         "indicate ±1 SD. (A) Extracellular-matrix and phenotype markers; (B) growth "
         "factors; (C) transcription factors; and (D) cytokines, chemokines, "
         "proteases, and related mediators. Activations are bounded between 0 and 1; "
-        "symmetric SD whiskers can extend beyond these bounds.",
+        "symmetric SD whiskers can extend beyond these bounds."),
     ),
     "BSL_MET_OXI": (
         "Figure 4",
-        "Baseline mean activation under Hypo (blue), NL (green), and HL (red). Bars "
+        ("Baseline mean activation under Hypo (blue), NL (green), and HL (red). Bars "
         "represent means across 100 replicate simulations per condition; error bars "
         "indicate ±1 SD. (A) Metabolic and related signaling nodes; (B) ion channels "
         "and calcium-associated nodes; (C) oxidative-stress defense and "
         "proteostasis; and (D) cell survival, apoptosis, and mitochondrial-stress "
         "markers. Activations are bounded between 0 and 1; symmetric SD whiskers can "
-        "extend beyond these bounds.",
+        "extend beyond these bounds."),
     ),
     "NP_MT_FALS_RECT": ("Figure 5", _FALS),
     "NP_MT_FALS": ("Figure 5", _FALS),

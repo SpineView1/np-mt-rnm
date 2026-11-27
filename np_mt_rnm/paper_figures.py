@@ -21,8 +21,8 @@ mirrors the MATLAB plotting helpers that produced them:
 """
 from __future__ import annotations
 
+from collections.abc import Sequence
 from pathlib import Path
-from typing import Sequence
 
 import matplotlib
 
@@ -350,7 +350,7 @@ def plot_baseline_panels(means: dict[str, np.ndarray], node_names: Sequence[str]
     idx = {n: i for i, n in enumerate(node_names)}
     regimes = ("Hypo", "Normal", "Hyper")
     fig, axes = plt.subplots(2, 2, figsize=(16, 8.6),
-                             gridspec_kw=dict(hspace=0.55, wspace=0.08))
+                             gridspec_kw={"hspace": 0.55, "wspace": 0.08})
     for ax, key, letter in zip(axes.flat, groups, "ABCD"):
         title, nodes = GROUPS[key]
         nodes = [n for n in nodes if n in idx]
@@ -416,7 +416,7 @@ def plot_transition_figure(h2n: np.ndarray, n2h: np.ndarray, node_names: Sequenc
     nodes = [n for n in nodes if n in idx]
     cols = [idx[n] for n in nodes]
     height = max(5.0, 0.62 * len(nodes) + 1.8)
-    fig, axes = plt.subplots(1, 2, figsize=(20, height), gridspec_kw=dict(wspace=0.12))
+    fig, axes = plt.subplots(1, 2, figsize=(20, height), gridspec_kw={"wspace": 0.12})
     _transition_heatmap(axes[0], np.asarray(h2n)[:, cols].T, nodes,
                         f"{title} (Hypo to Normal)", "A", fig)
     _transition_heatmap(axes[1], np.asarray(n2h)[:, cols].T, nodes,
@@ -440,7 +440,7 @@ def plot_representative_paths(h2n: np.ndarray, n2h: np.ndarray, node_names: Sequ
     _style()
     idx = {n: i for i, n in enumerate(node_names)}
     fig, axes = plt.subplots(1, 2, figsize=(20, 8.2), sharey=True,
-                             gridspec_kw=dict(wspace=0.0))
+                             gridspec_kw={"wspace": 0.0})
     for ax, data, title, letter in [
         (axes[0], np.asarray(h2n), "Hypo to Normal transition path", "A"),
         (axes[1], np.asarray(n2h), "Normal to Hyper transition path", "B"),
@@ -553,7 +553,7 @@ def plot_falsification_profiles(nodes: Sequence[str], classes: Sequence[str],
         return FALS_GREEN if (d == 1 and code == 2) or (d == -1 and code == 1) else FALS_RED
 
     half = int(np.ceil(n / 2))
-    blocks = [(0, range(0, half)), (3.4, range(half, n))]
+    blocks = [(0, range(half)), (3.4, range(half, n))]
     col_w, gap = 0.95, 0.18
     for ox, rows in blocks:
         bounds = [(ox + 0.56, ox + 0.56 + col_w), (ox + 0.56 + col_w + gap, ox + 0.56 + 2 * col_w + gap)]
@@ -723,8 +723,8 @@ def plot_node_resolved_pairs(panels: Sequence[dict], out_path: Path) -> None:
     error bars = SD.
     """
     _style()
-    styles = [dict(marker="o", color=(0.13, 0.36, 0.69), mfc=(0.13, 0.36, 0.69), ms=9),
-              dict(marker="s", color=(0.85, 0.37, 0.12), mfc="white", ms=7)]
+    styles = [{"marker": "o", "color": (0.13, 0.36, 0.69), "mfc": (0.13, 0.36, 0.69), "ms": 9},
+              {"marker": "s", "color": (0.85, 0.37, 0.12), "mfc": "white", "ms": 7}]
     heights = [max(4.5, 0.42 * len(p["nodes"]) + 2.0) for p in panels]
     row_h = [max(heights[0], heights[1]), max(heights[2], heights[3])]
     fig = plt.figure(figsize=(20, sum(row_h) + 1.5))

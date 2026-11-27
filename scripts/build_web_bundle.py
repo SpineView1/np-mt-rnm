@@ -16,8 +16,8 @@ from np_mt_rnm.categories import (
     get_primary_category,
     nodes_in_category,
 )
-from np_mt_rnm.network import load_network
 from np_mt_rnm.figures import REGIME_COLORS
+from np_mt_rnm.network import load_network
 from np_mt_rnm.simulation import PAPER_REGIMES
 from np_mt_rnm.topology import compute_topology
 

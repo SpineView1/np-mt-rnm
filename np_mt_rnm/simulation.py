@@ -5,8 +5,8 @@ the loading regimes and execute ode45 per replicate).
 """
 from __future__ import annotations
 
+from collections.abc import Mapping
 from dataclasses import dataclass
-from typing import Mapping
 
 import numpy as np
 from scipy.integrate import solve_ivp
@@ -45,12 +45,12 @@ REGIME_SEEDS: dict[str, int] = {"Hypo": 1002, "Normal": 2002, "Hyper": 3002}
 
 # Solver settings per spec Section 6 (match MATLAB odeset).
 T_SPAN = (0.0, 100.0)
-SOLVER_KWARGS = dict(
-    method="RK45",
-    rtol=1e-8,
-    atol=1e-10,
-    max_step=0.5,
-)
+SOLVER_KWARGS = {
+    "method": "RK45",
+    "rtol": 1e-8,
+    "atol": 1e-10,
+    "max_step": 0.5,
+}
 
 
 def build_clamps(

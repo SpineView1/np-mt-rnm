@@ -14,9 +14,9 @@ Total = 6 single suppressions + 6 single activations + 6×6 duals = 48.
 """
 from __future__ import annotations
 
+from collections.abc import Iterator
 from dataclasses import dataclass
 from itertools import product
-from typing import Iterator
 
 import numpy as np
 

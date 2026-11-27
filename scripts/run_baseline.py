@@ -94,16 +94,16 @@ def main() -> None:
     n_elig = int(np.isfinite(stats.p_KW_3group).sum())
     summary = "\n".join([
         "Baseline comparisons of RNM outcomes across randomized initial conditions",
-        f"Mean activation error bars: percentile bootstrap {100 * (1 - BASE_ALPHA):.1f}% CIs, "
-        f"{BASE_NBOOT} resamples/condition",
+        (f"Mean activation error bars: percentile bootstrap {100 * (1 - BASE_ALPHA):.1f}% CIs, "
+        f"{BASE_NBOOT} resamples/condition"),
         "Kruskal-Wallis: three conditions (Hypo, NL, HL) per node.",
         "Pairwise Wilcoxon rank-sum: Hypo-NL, Hypo-HL, NL-HL per node.",
         "BH-FDR correction across nodes within each comparison family.",
         f"Network nodes: {len(stats)}; eligible tested nodes: {n_elig} (fixed loading inputs excluded).",
         f"KW: q<{BASE_STATS_ALPHA:.3f} for {n_kw} nodes.",
         f"NL-HL: q<{BASE_STATS_ALPHA:.3f} for {n_nh} nodes.",
-        "These p/q values describe model-output variation among initializations, "
-        "NOT biological replicates.",
+        ("These p/q values describe model-output variation among initializations, "
+        "NOT biological replicates."),
         "",
     ])
     (TABLES / "baseline_statistical_summary.txt").write_text(summary)

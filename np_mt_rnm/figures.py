@@ -7,15 +7,11 @@ and the regime colour palette used by the webapp bundle.
 from __future__ import annotations
 
 from pathlib import Path
-from typing import TYPE_CHECKING
 
 import matplotlib.pyplot as plt
 import numpy as np
 
 from np_mt_rnm.categories import nodes_in_category
-
-if TYPE_CHECKING:
-    pass
 
 # Paper's regime color palette (eye-match to Figs 4–5).
 REGIME_COLORS = {
