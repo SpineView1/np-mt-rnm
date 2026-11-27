@@ -122,9 +122,9 @@ NODE_RESOLVED_FIGURES = {
         ("CYT", "Cytokines, chemokines and proteases"),
     ],
     "NodeResolved_MET_ION_SURV_OXI": [
-        ("MET", "Metabolic and related regulators"),
-        ("ION", "Ion channels and related processes"),
-        ("CS", "Cell survival, apoptosis, mitophagy and DNA damage"),
+        ("MET", "Metabolic and related"),
+        ("ION", "Ion channels and related"),
+        ("CS", "Cell survival, apoptosis and mitophagy"),
         ("OXI", "Oxidative-stress defense and proteostasis"),
     ],
 }
@@ -509,7 +509,7 @@ def plot_falsification_profiles(nodes: Sequence[str], classes: Sequence[str],
     n = len(nodes)
 
     fig = plt.figure(figsize=(20, 0.24 * n + 2.4))
-    gs = fig.add_gridspec(1, 2, width_ratios=[2.1, 1], wspace=0.22)
+    gs = fig.add_gridspec(1, 2, width_ratios=[1.9, 1.2], wspace=0.12)
 
     # --- A: parallel bars -------------------------------------------------
     ax = fig.add_subplot(gs[0])
@@ -539,7 +539,7 @@ def plot_falsification_profiles(nodes: Sequence[str], classes: Sequence[str],
     ax.text(-0.06, 1.0, "(A)", transform=ax.transAxes, fontsize=22, fontweight="bold",
             ha="right", va="bottom")
 
-    # --- B: sign grid -----------------------------------------------------
+    # --- B: sign grid, split into two blocks as in the manuscript ---------
     ax = fig.add_subplot(gs[1])
     exp_dir = np.where(classes == "anabolic", 1, -1)
     sim_dir = np.zeros(n, dtype=int)
@@ -552,46 +552,45 @@ def plot_falsification_profiles(nodes: Sequence[str], classes: Sequence[str],
             return FALS_GRAY
         return FALS_GREEN if (d == 1 and code == 2) or (d == -1 and code == 1) else FALS_RED
 
-    bounds = [(0.56, 1.51), (1.69, 2.64)]
-    for i in range(n):
-        yt, yb = i + 0.5, i + 1.5
-        for col, (xl, xr) in enumerate(bounds):
-            code = 2 - col
-            ax.fill([xl, xr, xl], [yt, yt, yb], color=colour(sim_dir[i], code), lw=0)
-            ax.fill([xr, xr, xl], [yt, yb, yb], color=colour(exp_dir[i], code), lw=0)
-            ax.plot([xr, xl], [yt, yb], color=FALS_EDGE, lw=0.76)
-    for xl, xr in bounds:
-        ax.plot([xl, xl], [0.5, n + 0.5], color=FALS_EDGE, lw=1.65)
-        ax.plot([xr, xr], [0.5, n + 0.5], color=FALS_EDGE, lw=1.65)
-        for j in range(n + 1):
-            ax.plot([xl, xr], [j + 0.5, j + 0.5], color=FALS_EDGE, lw=0.9)
+    half = int(np.ceil(n / 2))
+    blocks = [(0, range(0, half)), (3.4, range(half, n))]
+    col_w, gap = 0.95, 0.18
+    for ox, rows in blocks:
+        bounds = [(ox + 0.56, ox + 0.56 + col_w), (ox + 0.56 + col_w + gap, ox + 0.56 + 2 * col_w + gap)]
+        for r, i in enumerate(rows):
+            yt, yb = r + 0.5, r + 1.5
+            for col, (xl, xr) in enumerate(bounds):
+                code = 2 - col
+                ax.fill([xl, xr, xl], [yt, yt, yb], color=colour(sim_dir[i], code), lw=0)
+                ax.fill([xr, xr, xl], [yt, yb, yb], color=colour(exp_dir[i], code), lw=0)
+                ax.plot([xr, xl], [yt, yb], color=FALS_EDGE, lw=0.76)
+            ax.text(ox + 0.48, r + 1, nodes[i], ha="right", va="center", fontsize=9.6)
+        m = len(rows)
+        for xl, xr in bounds:
+            ax.plot([xl, xl], [0.5, m + 0.5], color=FALS_EDGE, lw=1.65)
+            ax.plot([xr, xr], [0.5, m + 0.5], color=FALS_EDGE, lw=1.65)
+            for j in range(m + 1):
+                ax.plot([xl, xr], [j + 0.5, j + 0.5], color=FALS_EDGE, lw=0.9)
+        for (xl, xr), lab in zip(bounds, ("NL State", "HL State")):
+            ax.text((xl + xr) / 2, 0.2, lab, ha="center", va="bottom", fontsize=13)
     support = int(np.sum(sim_dir == exp_dir))
     opposite = int(np.sum(sim_dir == -exp_dir))
     uncertain = int(np.sum(sim_dir == 0))
-    key_x = 2.95
+    ky = half + 1.6
     for k, (c, lab) in enumerate([(FALS_GREEN, "Higher under loading"),
                                   (FALS_RED, "Lower under loading"),
                                   (FALS_GRAY, "Simulated CI includes zero")]):
-        yk = n * (0.25 + 0.1 * k)
-        ax.fill([key_x, key_x + 0.22, key_x + 0.22, key_x],
-                [yk - 0.5, yk - 0.5, yk + 0.5, yk + 0.5], color=c, ec=(0.5, 0.5, 0.5), lw=0.5)
-        ax.text(key_x + 0.31, yk, lab, va="center", fontsize=9, color=FALS_DARK,
-                fontweight="normal")
-    ax.text(key_x, n * 0.57, "Upper-left: simulation", fontsize=9, fontweight="normal")
-    ax.text(key_x, n * 0.63, "Lower-right: experiment", fontsize=9, fontweight="normal")
-    for k, (lab, v) in enumerate([("Supported", support), ("Contradicted", opposite),
-                                  ("Inconclusive", uncertain)]):
-        ax.text(key_x, n * (0.80 + 0.06 * k), f"{lab}: {v}", fontsize=10)
-    ax.set_ylim(n + 0.5, 0.5)
-    ax.set_xlim(0.45, 5.8)
-    ax.set_yticks(np.arange(1, n + 1))
-    ax.set_yticklabels(nodes, fontsize=9.6)
-    ax.set_xticks([np.mean(b) for b in bounds])
-    ax.set_xticklabels(["NL", "HL"], fontsize=14)
-    ax.xaxis.set_ticks_position("top")
-    ax.tick_params(length=0)
-    for sp in ax.spines.values():
-        sp.set_visible(False)
+        x0 = 0.56 + 2.25 * k
+        ax.fill([x0, x0 + 0.3, x0 + 0.3, x0], [ky - 0.35, ky - 0.35, ky + 0.35, ky + 0.35],
+                color=c, ec=(0.5, 0.5, 0.5), lw=0.5)
+        ax.text(x0 + 0.4, ky, lab, va="center", fontsize=8.5, fontweight="normal")
+    ax.text(0.56, ky + 1.2, "Upper-left triangle: RNM predicted; lower-right: experiment-derived",
+            fontsize=8.5, va="center", fontweight="normal")
+    ax.text(0.56, ky + 2.3, f"Supported: {support}   Contradicted: {opposite}   "
+            f"Inconclusive: {uncertain}", fontsize=10, va="center")
+    ax.set_ylim(ky + 3.0, -0.4)
+    ax.set_xlim(-0.6, 6.9)
+    ax.axis("off")
     ax.text(0.0, 1.0, "(B)", transform=ax.transAxes, fontsize=22, fontweight="bold",
             ha="right", va="bottom")
     _save(fig, out_path)
