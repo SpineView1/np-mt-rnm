@@ -75,7 +75,8 @@ def _build_baseline_json() -> dict:
     return out
 
 
-# The four panels of paper Figure 4, in caption order:
+# The four panels of manuscript Figure 3 (BSL_ECM_GF; "Figure 4" in earlier
+# manuscript versions, hence the key names kept for the webapp), in caption order:
 #   (A) ECM anabolism and phenotype markers
 #   (B) Growth factors
 #   (C) Transcription factors
@@ -87,7 +88,7 @@ FIGURE4_PANELS: tuple[str, ...] = (
     "cytokines_chemokines_proteases",
 )
 
-# Panel headings worded as the paper's Figure 4 caption, which differs slightly
+# Panel headings worded as the manuscript's Figure 3 caption, which differs slightly
 # from the internal CATEGORY_LABELS used elsewhere in the app.
 FIGURE4_TITLES: dict[str, str] = {
     "ecm_matrix": "ECM anabolism and phenotype markers",
@@ -102,13 +103,15 @@ def _build_baseline_groups_json(net, baseline: dict) -> dict:
     """Pre-shape the baseline means into per-category panels for the webapp.
 
     The webapp plots grouped bars per biological category, one series per
-    loading regime, exactly as plot_grouped_bars_no_errors does in
-    NP_MT_RNM_FALSIFY4_1.m. Doing the grouping here keeps the node ordering
+    loading regime, with 95% bootstrap CIs of the mean, as
+    plot_grouped_bars_with_CI does in NP_MT_FALSIFY4_1_39.m. Doing the grouping here keeps the node ordering
     and category membership in one place instead of duplicating the MATLAB
     group lists in JavaScript.
     """
     present = set(net.node_names)
     groups: dict[str, dict] = {}
+    ci = pd.read_csv(RESULTS / "tables" / "baseline_means_95ci.csv").set_index("Node")
+    ci_col = {"Hypo": "Hypo", "Normal": "NL", "Hyper": "HL"}
 
     for cat in CATEGORY_ORDER:
         if cat == "other":
@@ -122,6 +125,8 @@ def _build_baseline_groups_json(net, baseline: dict) -> dict:
             series[regime] = {
                 "mean": [per_node[n]["mean"] for n in nodes],
                 "std": [per_node[n]["std"] for n in nodes],
+                "ci_low": [float(ci.loc[n, f"{ci_col[regime]}_CI_Low"]) for n in nodes],
+                "ci_high": [float(ci.loc[n, f"{ci_col[regime]}_CI_High"]) for n in nodes],
             }
         groups[cat] = {
             "label": CATEGORY_LABELS[cat],
@@ -143,8 +148,9 @@ def _build_baseline_groups_json(net, baseline: dict) -> dict:
             "source": "np-mt-rnm results/tables/baseline_summary.csv",
             "statistic": "mean activation over 100 replicates from random initial conditions",
             "note": (
-                "Means only, matching the paper's Figure 4 "
-                "(plot_grouped_bars_no_errors draws no error bars). Standard "
+                "Means with 95% percentile bootstrap CIs of the mean (10,000 "
+                "resamples), as in the manuscript's Figures 3-4 "
+                "(plot_grouped_bars_with_CI, NP_MT_FALSIFY4_1_39.m). Standard "
                 "deviations are included per node because several nodes are "
                 "bimodal across replicates under Hyper loading, where a mean "
                 "describes no individual steady state."

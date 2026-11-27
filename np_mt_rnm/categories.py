@@ -1,6 +1,6 @@
 """Functional-category groupings for the 146 NP-MT network nodes.
 
-Authoritative source: legacy/NP_MT_RNM_FALSIFY4_1.m lines 19–45.
+Authoritative source: legacy/NP_MT_FALSIFY4_1_39.m lines 24–58.
 The MATLAB `group_categories` cell array is transcribed verbatim below,
 preserving the exact node names from data/MT_PRIMARY4_1.xlsx.
 

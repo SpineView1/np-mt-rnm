@@ -1,15 +1,16 @@
-"""Hyper→Normal rescue screen. Ports legacy/RESCUE_NEW4_1_final.m.
+"""Hyper→Normal rescue screen. Ports legacy/RESCUE_NEW4_1_48_targets_HQ.m.
 
-Per paper Section 2.5:
-  - Start from Hyper steady-state ensemble.
-  - Apply single- or dual-node clamps (catabolic → 0, anabolic → 1).
+Per the manuscript (Methods, "Hyper-to-Normal rescue screening via node clamping"):
+  - Start from the Hyper (HL) steady-state ensemble.
+  - Apply single- or dual-node clamps (suppression → 0, activation → 1).
   - Compute replicate-wise ΔX = X_perturbed − X_hyper_baseline.
-  - Rank perturbations by mean |Δ| within a functional category.
+  - Score each functional module by TRUE rescue: the percentage reduction of
+    the Euclidean HL-to-NL distance of the module's ensemble-mean profile.
 
-Catabolic KD nodes: RhoA-E, PIEZO1, PI3K-E, FAK-E, ROS (clamp to 0).
-Anabolic UP nodes: SOX9, PPARγ, HIF-1α, NRF2, IκBα (clamp to 1).
+Suppression targets: RhoA-E, PIEZO1, ROS, P38, mTORC1, NF-κB (clamp to 0).
+Activation targets:  SOX9, PPARγ, HIF-1α, NRF2, SIRT1, FOXO (clamp to 1).
 
-Total = 5 single KD + 5 single UP + 5×5 dual = 35 perturbations.
+Total = 6 single suppressions + 6 single activations + 6×6 duals = 48.
 """
 from __future__ import annotations
 
@@ -22,15 +23,91 @@ import numpy as np
 from np_mt_rnm.network import Network
 from np_mt_rnm.simulation import REGIME_PRESETS, REGIME_SEEDS, ReplicateEnsemble, run_replicates
 
-# Using the Excel's exact Greek-letter node names.
-CATABOLIC_DOWN_NODES: tuple[str, ...] = ("RhoA-E", "PIEZO1", "PI3K-E", "FAK-E", "ROS")
-ANABOLIC_UP_NODES: tuple[str, ...] = ("SOX9", "PPARγ", "HIF-1α", "NRF2", "IκBα")
+# CATAB_KD_LIST / ANAB_UP_LIST in RESCUE_NEW4_1_48_targets_HQ.m, in its order,
+# using the Excel's exact node names (P38 is uppercase in MT_PRIMARY4_1.xlsx).
+CATABOLIC_DOWN_NODES: tuple[str, ...] = ("RhoA-E", "PIEZO1", "ROS", "P38", "mTORC1", "NF-κB")
+ANABOLIC_UP_NODES: tuple[str, ...] = ("SOX9", "PPARγ", "HIF-1α", "NRF2", "SIRT1", "FOXO")
+
+N_SINGLES = len(CATABOLIC_DOWN_NODES) + len(ANABOLIC_UP_NODES)          # 12
+N_DUALS = len(CATABOLIC_DOWN_NODES) * len(ANABOLIC_UP_NODES)            # 36
+N_PERTURBATIONS = N_SINGLES + N_DUALS                                   # 48
+
+# Readout groups of the rescue script (its own group_categories, which differ
+# slightly from the falsification script's display groups: e.g. the metabolic
+# group omits the antioxidant enzymes and the ion-channel group omits AQP1/5).
+# analyze_group_true_rescue resolves them with case-sensitive ismember, so a
+# name that is not a network node (ATF2, NutD) is reported missing and skipped.
+# Keys are the category ids of np_mt_rnm.categories.
+RESCUE_GROUPS: dict[str, tuple[str, ...]] = {
+    "cytokines_chemokines_proteases": (
+        "TNF", "IL6", "IL1β", "IL8", "CCL2", "CXCL1", "CXCL3",
+        "ADAMTS4/5", "MMP1", "MMP3", "MMP13",
+    ),
+    "growth_factor": (
+        "TGFβ", "VEGF", "IGF1", "BMP2", "CCN2", "GDF5", "FGF2", "FGF18", "Wnt3a", "Wnt5a",
+    ),
+    "transcription_factor": (
+        "CREB", "HIF-1α", "HIF-2α", "NF-κB", "AP-1", "FOXO", "SOX9", "ATF2", "NFAT", "RUNX2",
+        "YAP/TAZ", "MRTF-A", "NRF2", "HSF1", "TonEBP", "ELK1", "PPARγ", "CITED2",
+    ),
+    "ion_channel": (
+        "Ca2+os", "Ca2+su", "CaMKII", "PKC-E", "PKC-M", "PLCγ-M", "PLCγ-E", "CaN", "IP3", "PLA2",
+    ),
+    "metabolic": (
+        "LKB1", "NAD+", "AMPK", "mTORC1", "mTORC2", "SIRT1", "PI3K-M", "PI3K-E", "PIP3-M",
+        "PIP3-E", "PDK1-M", "PDK1-E", "AKT1-M", "AKT1-E", "GSK3B", "ULK1", "PTEN", "PLD2",
+        "PGE2", "COX-2", "PHD2", "VHL", "Rheb",
+    ),
+    "ecm_matrix": ("COL2A1", "COL1A1", "COL10A1", "ACAN", "TIMP3"),
+    "mechanosensor": (
+        "Hypo", "NL", "HL", "α5β1-FN", "α5β1-Fs", "αVβ3", "αVβ6", "SDC4-E", "SDC4-M",
+        "TRPV4", "PIEZO1", "NutD", "MitD",
+    ),
+    "cell_fate": ("Bcl2", "BAX", "CASP3", "CASP9", "BNIP3", "GADD45", "DRP1", "MOMP"),
+    "oxidative_proteostasis": ("HO-1", "GPX1", "SOD1", "SOD2", "CAT", "HSP70", "HSP27", "ROS"),
+    "mapk": (
+        "RAS-M", "RAS-E", "RAF-M", "RAF-E", "MEK-M", "MEK-E", "ERK-M", "ERK-E",
+        "MKK3/6", "MKK4/7", "JNK", "P38", "RSK", "TAK1",
+    ),
+    "rho_cytoskeletal": (
+        "RhoA-M", "RhoA-E", "RAC1-M", "RAC1-E", "CDC42", "ROCK-M", "ROCK-E", "PAK1", "PKN1",
+        "FAK-M", "FAK-E", "MST1/2", "LATS1/2",
+    ),
+}
+
+# The eight modules whose Top-20 rankings the manuscript reports
+# (main-text rescue figures and Supplementary Table "Highest-scoring
+# intervention for different functional modules").
+PAPER_RESCUE_MODULES: tuple[str, ...] = (
+    "ecm_matrix",
+    "growth_factor",
+    "transcription_factor",
+    "cytokines_chemokines_proteases",
+    "metabolic",
+    "ion_channel",
+    "oxidative_proteostasis",
+    "cell_fate",
+)
+
+# Phenotype readout panels (ANABOLIC_TX / CATABOLIC_TX in the rescue script).
+ANABOLIC_PANEL: tuple[str, ...] = (
+    "ACAN", "COL2A1", "TIMP3", "PPARγ", "GDF5", "IGF1", "SOX9", "Bcl2",
+)
+CATABOLIC_PANEL: tuple[str, ...] = (
+    "MMP1", "MMP3", "MMP13", "ADAMTS4/5", "IL1β", "IL6", "IL8", "TNF", "iNOS", "COX-2",
+)
 
 
 @dataclass(frozen=True)
 class Perturbation:
     anabolic_up: str | None
     catabolic_down: str | None
+
+    @property
+    def short_label(self) -> str:
+        """MATLAB ShortClampLabels style, as printed in the manuscript: 'SOX9-ROS'."""
+        parts = [n for n in (self.anabolic_up, self.catabolic_down) if n is not None]
+        return "-".join(parts) if parts else "baseline"
 
     @property
     def label(self) -> str:
@@ -58,7 +135,7 @@ class PerturbationResult:
 
     @property
     def perturbed_mean(self) -> np.ndarray:
-        """Column of FINAL in RESCUE_NEW4_1_final.m."""
+        """Column of FINAL in RESCUE_NEW4_1_48_targets_HQ.m."""
         return self.perturbed_states.mean(axis=0)
 
 
@@ -82,7 +159,7 @@ def run_perturbation(
 ) -> PerturbationResult:
     """Run a perturbation on top of the Hyper regime, paired-sequentially.
 
-    Mirrors the design stated in RESCUE_NEW4_1_final.m; for each replicate r:
+    Mirrors the design stated in RESCUE_NEW4_1_48_targets_HQ.m; for each replicate r:
 
         random initial state -> Hyper steady state -> perturbed steady state
 
@@ -91,7 +168,7 @@ def run_perturbation(
     t=0. The delta is then replicate-wise, Delta_r = Perturbed_r - Hyper_r.
 
     `baseline` supplies an already-computed Hyper ensemble. MATLAB solves
-    SS_hyper_all once and reuses it for all 35 perturbations, so the whole
+    SS_hyper_all once and reuses it for all 48 perturbations, so the whole
     screen shares one baseline; pass it in to reproduce that (and halve the
     solver work). When omitted, a fresh baseline is solved for this call.
     """
@@ -147,7 +224,7 @@ def true_rescue_percent(
 ) -> np.ndarray:
     """Percent restoration of a group's profile from Hyper toward Normal.
 
-    Ports analyze_group_true_rescue in legacy/RESCUE_NEW4_1_final.m::
+    Ports analyze_group_true_rescue in legacy/RESCUE_NEW4_1_48_targets_HQ.m::
 
         D_Hyper       = norm(hyper_profile - normal_profile)
         D_Rescue(c)   = norm(rescued_profiles[:, c] - normal_profile)
@@ -201,7 +278,7 @@ def true_rescue_percent(
     return 100.0 * (d_hyper - d_rescue) / d_hyper
 
 
-# N_TOP_TRUE_RESCUE in RESCUE_NEW4_1_final.m.
+# N_TOP_TRUE_RESCUE in RESCUE_NEW4_1_48_targets_HQ.m.
 DEFAULT_TOP_N = 20
 
 

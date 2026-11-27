@@ -15,9 +15,9 @@ DATA_XLSX = Path(__file__).resolve().parents[1] / "data" / "MT_PRIMARY4_1.xlsx"
 
 
 def test_regime_presets_match_paper():
-    """Paper Section 2.2 and RESCUE_NEW4_1_final.m:109-111.
+    """Paper Section 2.2 and RESCUE_NEW4_1_48_targets_HQ.m:113-115.
 
-    NP_MT_RNM_FALSIFY4_1.m:53 uses NL = 0.10 for Hyper; the paper states
+    NP_MT_FALSIFY4_1_39.m:61 uses NL = 0.10 for Hyper; the paper states
     Hypo = NL = 0.01, which is what we follow.
     """
     assert REGIME_PRESETS == {
@@ -79,7 +79,7 @@ def test_run_replicates_honors_supplied_initial_states():
 
     Required by the MATLAB paired-sequential rescue design, where replicate r's
     perturbed run starts from replicate r's own Hyper steady state
-    (run_reps_from_replicate_states_parallel in RESCUE_NEW4_1_final.m).
+    (run_reps_from_replicate_states_parallel in RESCUE_NEW4_1_48_targets_HQ.m).
     """
     import numpy as np
     from np_mt_rnm.network import load_network

@@ -85,6 +85,9 @@ def test_sbml_notes_carry_the_manuscript_abstract(tmp_path):
 
     out = tmp_path / "model.xml"
     assert export_sbml(load_network(DATA), out)
-    notes = libsbml.readSBML(str(out)).getModel().getNotesString()
+    from html import unescape
+
+    # XML-decode the notes: libsbml writes e.g. an apostrophe as &apos;.
+    notes = unescape(libsbml.readSBML(str(out)).getModel().getNotesString())
     for text in (paper.TITLE, paper.ABSTRACT, paper.AFFILIATION, *paper.AUTHORS):
         assert text in notes

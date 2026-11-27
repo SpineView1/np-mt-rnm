@@ -1,0 +1,9 @@
+Baseline comparisons of RNM outcomes across randomized initial conditions
+Mean activation error bars: percentile bootstrap 95.0% CIs, 10000 resamples/condition
+Kruskal-Wallis: three conditions (Hypo, NL, HL) per node.
+Pairwise Wilcoxon rank-sum: Hypo-NL, Hypo-HL, NL-HL per node.
+BH-FDR correction across nodes within each comparison family.
+Network nodes: 146; eligible tested nodes: 143 (fixed loading inputs excluded).
+KW: q<0.050 for 143 nodes.
+NL-HL: q<0.050 for 143 nodes.
+These p/q values describe model-output variation among initializations, NOT biological replicates.

@@ -5,6 +5,13 @@
 **Paper:** Workineh & Noailly, *A systems-level network model reveals how mechanical loading organizes regulatory states and transitions in nucleus pulposus cells* (2026)
 **Submission target:** ~2026-04-27
 
+> **Historical document.** This is the original April 2026 design spec. Since the
+> 2026-11 manuscript revision the falsification uses 39 benchmarks with zero-based
+> bootstrap-CI criteria (`legacy/NP_MT_FALSIFY4_1_39.m`), the rescue screen has 48
+> interventions (6 suppression × 6 activation targets, `legacy/RESCUE_NEW4_1_48_targets_HQ.m`),
+> and the transition-path analysis is no longer part of the manuscript. See the
+> README for the current state.
+
 ## 1. Context
 
 The biologist (Zerihun Workineh) has MATLAB code implementing a regulatory network model (RNM) of NP cell mechanotransduction: 147 nodes, 353 signed edges (357 before the 2026-09 revision disconnected NutD), three loading regimes (Hypo, Normal, Hyper), a falsification benchmark (45 rules, 95% pass rate claimed), constrained transition-path analysis, and a rescue perturbation screen.

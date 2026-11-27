@@ -1,8 +1,15 @@
 """Draw every computational figure of the manuscript, named as in the paper.
 
-Reads the outputs of run_topology / run_baseline / run_transitions /
-run_falsification / run_rescue (no re-simulation) and writes
-results/figures/paper/<ManuscriptName>.png.
+Reads the outputs of run_topology / run_baseline / run_falsification /
+run_rescue (no re-simulation) and writes results/figures/paper/<Name>.png:
+
+  TOPO_STATS.png                      Figure 2
+  BSL_ECM_GF.png, BSL_MET_OXI.png     Figures 3-4 (95% bootstrap CIs of the mean)
+  NP_MT_FALS_RECT.png, NP_MT_FALS.png Figure 5 (A-B, C)
+  Top20_<tag>_TrueRescue.png          Figures 6-7 (8 modules)
+  NodeResolved_ECM_GF_TF_CYT.png,
+  NodeResolved_MET_ION_SURV_OXI.png   Supplementary node-resolved figures
+  heatmaps/heatmap_{all,singles,duals}_<module>.png  rescue Δ with BH-FDR stars
 """
 from __future__ import annotations
 
@@ -13,6 +20,7 @@ import pandas as pd
 
 from np_mt_rnm import paper_figures as pf
 from np_mt_rnm.network import load_network
+from np_mt_rnm.rescue import N_SINGLES, RESCUE_GROUPS
 from np_mt_rnm.statistics import bh_fdr, permutation_pvalues
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -21,7 +29,7 @@ TABLES = RESULTS / "tables"
 REPS = RESULTS / "replicates"
 OUT = RESULTS / "figures" / "paper"
 
-# rng(PERMUTATION_SEED, 'twister') in RESCUE_NEW4_1_final.m, BASE_SEED + 4000.
+# rng(PERMUTATION_SEED, 'twister') in RESCUE_NEW4_1_48_targets_HQ.m, BASE_SEED + 4000.
 PERMUTATION_SEED = 4001
 N_PERM = 1000
 
@@ -40,67 +48,92 @@ def topology() -> None:
     )
 
 
+def _baseline_ci():
+    t = pd.read_csv(TABLES / "baseline_means_95ci.csv")
+    names = list(t["Node"])
+    col = {"Hypo": "Hypo", "Normal": "NL", "Hyper": "HL"}
+    means = {r: t[f"{c}_Mean"].values for r, c in col.items()}
+    lo = {r: t[f"{c}_CI_Low"].values for r, c in col.items()}
+    hi = {r: t[f"{c}_CI_High"].values for r, c in col.items()}
+    return names, means, lo, hi
+
+
 def baseline() -> None:
-    means = {}
-    names = None
-    for regime in ("Hypo", "Normal", "Hyper"):
-        z = np.load(REPS / f"baseline_{regime.lower()}.npz")
-        means[regime] = z["steady_states"].mean(axis=0)
-        names = list(z["node_names"])
-    pf.plot_baseline_panels(means, names, ["ECM", "GF", "TF", "CYT"], OUT / "BSL_ECM_GF.png")
-    pf.plot_baseline_panels(means, names, ["MET", "ION", "OXI", "CSF"], OUT / "BSL_MET_OXI.png")
-
-
-def transitions() -> None:
-    h2n = pd.read_csv(TABLES / "transition_hypo_to_normal.csv").drop(columns="step")
-    n2h = pd.read_csv(TABLES / "transition_normal_to_hyper.csv").drop(columns="step")
-    names = list(h2n.columns)
-    for group in ("ECM", "TF", "GF", "CYT", "OXI", "CSF"):
-        pf.plot_transition_figure(h2n.values, n2h.values, names, group,
-                                  OUT / f"{group}_transition.png")
-    pf.plot_representative_paths(h2n.values, n2h.values, names,
-                                 OUT / "Representative_transition_paths.png")
+    names, means, lo, hi = _baseline_ci()
+    pf.plot_baseline_panels(means, names, ["ECM", "GF", "TF", "CYT"], OUT / "BSL_ECM_GF.png", lo, hi)
+    pf.plot_baseline_panels(means, names, ["MET", "ION", "OXI", "CSF"], OUT / "BSL_MET_OXI.png", lo, hi)
 
 
 def falsification() -> None:
     df = pd.read_csv(TABLES / "falsification_rules.csv")
-    pf.plot_falsification(df["node"], df["class"], df["delta"], df["ci_lower"],
-                          df["ci_upper"], OUT / "NP_MT_FALS.png")
+    names, means, lo, hi = _baseline_ci()
+    idx = [names.index(n) for n in df["node"]]
+    pf.plot_falsification_profiles(
+        df["node"], df["class"], df["delta"], df["ci_lower"], df["ci_upper"],
+        means["Normal"][idx], lo["Normal"][idx], hi["Normal"][idx],
+        means["Hyper"][idx], lo["Hyper"][idx], hi["Hyper"][idx],
+        OUT / "NP_MT_FALS_RECT.png",
+    )
+    pf.plot_falsification_forest(df["node"], df["class"], df["delta"], df["ci_lower"],
+                                 df["ci_upper"], df["outcome"], OUT / "NP_MT_FALS.png")
 
 
 def rescue() -> None:
-    df = pd.read_csv(TABLES / "true_rescue_rankings.csv")
-    for group, cat in pf.MODULE_CATEGORY.items():
-        top = df[df["category"] == cat].sort_values("rank")
-        pf.plot_true_rescue(
-            [pf.matlab_label(s) for s in top["rescue_strategy"]],
-            top["rescue_percent"].values,
-            pf.RESCUE_TITLES[group],
-            OUT / f"{group}_rescue.png",
-        )
+    rankings = pd.read_csv(TABLES / "true_rescue_rankings.csv")
+    for tag, cat in pf.MODULE_CATEGORY.items():
+        top = rankings[rankings["category"] == cat].sort_values("rank").head(20)
+        pf.plot_true_rescue(list(top["rescue_strategy"]), top["rescue_percent"].values,
+                            pf.RESCUE_TITLES[tag], OUT / f"Top20_{tag}_TrueRescue.png")
 
     z = np.load(REPS / "rescue_screen.npz")
     names = list(z["node_names"])
-    labels = [pf.matlab_label(s) for s in z["labels"]]
+    labels = list(z["labels"])
     base = z["hyper_states"]                       # (R, N)
     pert = z["perturbed_states"]                   # (C, R, N)
     delta = pert - base[None]
     delta_mean = delta.mean(axis=1).T              # (N, C)
     delta_sd = delta.std(axis=1, ddof=1).T
+
+    # Node-resolved responses of the two highest-ranked interventions per module.
+    for fname, spec in pf.NODE_RESOLVED_FIGURES.items():
+        panels = []
+        for tag, title in spec:
+            cat = pf.MODULE_CATEGORY[tag]
+            nodes = [n for n in RESCUE_GROUPS[cat] if n in names]
+            rows = [names.index(n) for n in nodes]
+            top2 = rankings[rankings["category"] == cat].sort_values("rank").head(2)
+            series = []
+            for lab, pct in zip(top2["rescue_strategy"], top2["rescue_percent"]):
+                c = labels.index(lab)
+                series.append({"label": lab, "percent": float(pct),
+                               "mean": delta_mean[rows, c], "sd": delta_sd[rows, c]})
+            panels.append({"title": title, "nodes": nodes, "series": series})
+        pf.plot_node_resolved_pairs(panels, OUT / f"{fname}.png")
+
+    # Δ heatmaps with permutation-test BH-FDR stars (heatmap_with_sig).
     rng = np.random.RandomState(PERMUTATION_SEED)
     pmat = np.column_stack([
         permutation_pvalues(pert[c], base, n_perm=N_PERM, rng=rng)
         for c in range(pert.shape[0])
     ])
     qmat = bh_fdr(pmat.ravel()).reshape(pmat.shape)
-    for group in pf.MODULE_CATEGORY:
-        pf.plot_node_resolved(group, names, labels, delta_mean, delta_sd, qmat,
-                              OUT / f"{group}_rescue1.png")
+    heat = OUT / "heatmaps"
+    for tag, cat in pf.MODULE_CATEGORY.items():
+        nodes = [n for n in RESCUE_GROUPS[cat] if n in names]
+        rows = [names.index(n) for n in nodes]
+        title = pf.RESCUE_TITLES[tag]
+        for kind, cols in (("all", slice(None)), ("singles", slice(0, N_SINGLES)),
+                           ("duals", slice(N_SINGLES, None))):
+            sub = {"all": title, "singles": f"{title}: Single-node interventions",
+                   "duals": f"{title}: Dual-node interventions"}[kind]
+            pf.plot_rescue_heatmap(delta_mean[rows][:, cols], qmat[rows][:, cols],
+                                   labels[cols], nodes, sub,
+                                   heat / f"heatmap_{kind}_{tag}.png")
 
 
 def main() -> None:
     OUT.mkdir(parents=True, exist_ok=True)
-    for step in (topology, baseline, transitions, falsification, rescue):
+    for step in (topology, baseline, falsification, rescue):
         print(f"[paper figures] {step.__name__}")
         step()
     print(f"[paper figures] written to {OUT}")

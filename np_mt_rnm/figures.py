@@ -1,8 +1,8 @@
-"""Matplotlib figure code tuned to match the paper's visual style.
+"""Quick-look figures for analyses outside the manuscript's figure set.
 
-Colors, fonts, and panel arrangement reproduce the published figures
-(Workineh & Noailly 2026). Each plotting function reads from a
-ReplicateEnsemble (or equivalent data) and writes a PNG to a given path.
+The manuscript's own figures are drawn by np_mt_rnm.paper_figures. This module
+keeps the transition-path heatmaps and trajectories (scripts/run_transitions.py)
+and the regime colour palette used by the webapp bundle.
 """
 from __future__ import annotations
 
@@ -12,10 +12,10 @@ from typing import TYPE_CHECKING
 import matplotlib.pyplot as plt
 import numpy as np
 
-from np_mt_rnm.categories import CATEGORY_LABELS, nodes_in_category
+from np_mt_rnm.categories import nodes_in_category
 
 if TYPE_CHECKING:
-    from np_mt_rnm.simulation import ReplicateEnsemble
+    pass
 
 # Paper's regime color palette (eye-match to Figs 4–5).
 REGIME_COLORS = {
@@ -39,91 +39,6 @@ def _apply_paper_style() -> None:
         "axes.spines.top": False,
         "axes.spines.right": False,
     })
-
-
-def plot_baseline_by_categories(
-    ensembles: dict[str, "ReplicateEnsemble"],
-    categories: list[str],
-    out_path: Path,
-    panel_titles: dict[str, str] | None = None,
-    figsize: tuple[float, float] = (14, 10),
-    n_cols: int = 2,
-) -> None:
-    """Grouped bar plot: one panel per category, bars per node, grouped by regime.
-
-    Reproduces paper Figs 4 (A–D) and 5 (A–D) when called with the
-    appropriate subset of categories.
-    """
-    _apply_paper_style()
-    n_panels = len(categories)
-    n_rows = (n_panels + n_cols - 1) // n_cols
-    fig, axes = plt.subplots(n_rows, n_cols, figsize=figsize, constrained_layout=True)
-    axes = np.array(axes).reshape(-1)
-
-    any_ens = next(iter(ensembles.values()))
-    node_names = any_ens.node_names
-
-    for ax, category in zip(axes, categories):
-        # Use only nodes that are in this category AND exist in the network.
-        cat_nodes = [n for n in nodes_in_category(category) if n in node_names]
-        if not cat_nodes:
-            ax.set_visible(False)
-            continue
-        x = np.arange(len(cat_nodes))
-        width = 0.28
-        regimes = list(ensembles.keys())
-        for k, regime in enumerate(regimes):
-            ens = ensembles[regime]
-            means = np.array([ens.mean()[node_names.index(n)] for n in cat_nodes])
-            stds = np.array([ens.std()[node_names.index(n)] for n in cat_nodes])
-            ax.bar(
-                x + (k - (len(regimes) - 1) / 2) * width,
-                means,
-                width,
-                yerr=stds,
-                label=regime,
-                color=REGIME_COLORS[regime],
-                edgecolor="black",
-                linewidth=0.5,
-                error_kw=dict(lw=0.6, capsize=2),
-            )
-        ax.set_xticks(x)
-        ax.set_xticklabels(cat_nodes, rotation=60, ha="right")
-        title = (panel_titles or {}).get(category, CATEGORY_LABELS[category])
-        ax.set_title(title)
-        ax.set_ylim(0, 1.05)
-        ax.set_ylabel("Activation")
-    for ax in axes[n_panels:]:
-        ax.set_visible(False)
-
-    handles, labels = axes[0].get_legend_handles_labels()
-    fig.legend(handles, labels, loc="upper right", bbox_to_anchor=(0.99, 1.0), frameon=False)
-    fig.savefig(out_path, dpi=FIG_DPI, bbox_inches="tight")
-    plt.close(fig)
-
-
-def plot_fig3_topology(
-    metrics,   # TopologyMetrics — forward ref to avoid import cycle
-    out_path: Path,
-    top_n: int = 20,
-) -> None:
-    """Three-panel horizontal bar plot: signed out-degree, betweenness, harmonic closeness."""
-    _apply_paper_style()
-    fig, axes = plt.subplots(1, 3, figsize=(15, 8), constrained_layout=True)
-
-    def _barh(ax, scores: dict[str, float], title: str, xlabel: str, color: str):
-        ranked = sorted(scores.items(), key=lambda kv: kv[1], reverse=True)[:top_n]
-        names = [k for k, _ in ranked][::-1]   # reverse so highest is at top
-        vals = [v for _, v in ranked][::-1]
-        ax.barh(names, vals, color=color, edgecolor="black", linewidth=0.5)
-        ax.set_title(title)
-        ax.set_xlabel(xlabel)
-
-    _barh(axes[0], metrics.signed_out_degree, "Signed out-degree", "edges", "#555")
-    _barh(axes[1], metrics.betweenness, "Betweenness centrality", "", "#7a3b9f")
-    _barh(axes[2], metrics.harmonic_closeness, "Harmonic closeness", "", "#2a7f62")
-    fig.savefig(out_path, dpi=FIG_DPI, bbox_inches="tight")
-    plt.close(fig)
 
 
 def plot_transition_heatmap(
@@ -193,207 +108,5 @@ def plot_transition_trajectories(
     axes[1].legend(
         loc="upper left", bbox_to_anchor=(1.02, 1), fontsize=7, frameon=False
     )
-    fig.savefig(out_path, dpi=FIG_DPI, bbox_inches="tight")
-    plt.close(fig)
-
-
-def plot_fig9_forest(
-    outcomes,   # list[FalsificationOutcome] — forward ref
-    out_path: Path,
-) -> None:
-    """Two-panel Fig 9: (A) bar of Δ colored by class, (B) forest plot with 95% CIs."""
-    _apply_paper_style()
-    fig, axes = plt.subplots(
-        1, 2, figsize=(14, max(6, 0.18 * len(outcomes))), constrained_layout=True
-    )
-    sorted_outs = sorted(outcomes, key=lambda o: o.delta)
-    nodes = [o.rule.node for o in sorted_outs]
-    deltas = [o.delta for o in sorted_outs]
-    colors = [
-        "#1f9d55" if o.rule.cls == "anabolic" else "#c74343" for o in sorted_outs
-    ]
-
-    axes[0].barh(nodes, deltas, color=colors, edgecolor="black", linewidth=0.3)
-    axes[0].axvline(0, color="k", lw=0.6)
-    axes[0].set_xlabel("Δ = Normal − Hyper")
-    axes[0].set_title("A. Directional effects")
-
-    for i, o in enumerate(sorted_outs):
-        axes[1].plot([o.ci_lower, o.ci_upper], [i, i], color="k", lw=0.8)
-        axes[1].plot(o.delta, i, "o", color=colors[i], markersize=4)
-    axes[1].set_yticks(np.arange(len(sorted_outs)))
-    axes[1].set_yticklabels(nodes)
-    axes[1].axvline(0, color="k", lw=0.4, ls=":")
-    axes[1].axvline(0.02, color="gray", lw=0.4, ls="--")
-    axes[1].axvline(-0.02, color="gray", lw=0.4, ls="--")
-    axes[1].set_xlabel("Δ with 95% bootstrap CI")
-    axes[1].set_title("B. Bootstrap CIs")
-
-    fig.savefig(out_path, dpi=FIG_DPI, bbox_inches="tight")
-    plt.close(fig)
-
-
-def plot_rescue_category(
-    results,   # list[PerturbationResult] — forward ref
-    category: str,
-    out_path: Path,
-    title: str,
-) -> None:
-    """4-panel figure reproducing Fig 10/11/12:
-       A = heatmap of mean Δ across perturbations × nodes in category,
-       B = ranked bar of mean|Δ| per perturbation,
-       C = node-level Δ for the top-ranked combinatorial perturbation,
-       D = node-level Δ for the strongest single-node perturbation.
-    """
-    from np_mt_rnm.rescue import mean_abs_displacement
-    _apply_paper_style()
-
-    node_names = results[0].node_names
-    nodes = [n for n in nodes_in_category(category) if n in node_names]
-    idx = [node_names.index(n) for n in nodes]
-    if not idx:
-        raise ValueError(f"no network nodes in category {category!r}")
-
-    fig, axes = plt.subplots(2, 2, figsize=(16, 12), constrained_layout=True)
-
-    # Panel A — heatmap of perturbations × nodes-in-category.
-    M = np.array([r.mean_delta[idx] for r in results])
-    labels = [r.perturbation.label for r in results]
-    vmax = float(np.max(np.abs(M))) if np.max(np.abs(M)) > 0 else 1.0
-    im = axes[0, 0].imshow(M, aspect="auto", cmap="RdBu_r", vmin=-vmax, vmax=vmax)
-    axes[0, 0].set_yticks(np.arange(len(labels)))
-    axes[0, 0].set_yticklabels(labels, fontsize=7)
-    axes[0, 0].set_xticks(np.arange(len(nodes)))
-    axes[0, 0].set_xticklabels(nodes, rotation=60, ha="right", fontsize=7)
-    axes[0, 0].set_title("A. Mean Δ (perturbed − Hyper baseline)")
-    fig.colorbar(im, ax=axes[0, 0], label="Δ")
-
-    # Panel B — ranked mean|Δ| per perturbation.
-    scores = [mean_abs_displacement(r, nodes) for r in results]
-    order = np.argsort(scores)[::-1]
-    axes[0, 1].barh(
-        [labels[i] for i in order][::-1],
-        [scores[i] for i in order][::-1],
-        color="#555",
-        edgecolor="black",
-        linewidth=0.4,
-    )
-    axes[0, 1].set_xlabel("Mean |Δ|")
-    axes[0, 1].set_title(f"B. Ranked by mean|Δ| — {category}")
-
-    # Panel C — highest-ranked combinatorial perturbation (anabolic↑ + catabolic↓).
-    combos = [i for i in order if results[i].perturbation.anabolic_up and results[i].perturbation.catabolic_down]
-    top_combo = results[combos[0]] if combos else results[order[0]]
-    c_vals = [top_combo.mean_delta[node_names.index(n)] for n in nodes]
-    c_errs = [top_combo.std_delta[node_names.index(n)] for n in nodes]
-    axes[1, 0].bar(
-        nodes,
-        c_vals,
-        yerr=c_errs,
-        color=["#1f9d55" if v > 0 else "#c74343" for v in c_vals],
-        edgecolor="black", linewidth=0.4, error_kw=dict(lw=0.6, capsize=2),
-    )
-    axes[1, 0].axhline(0, color="k", lw=0.5)
-    axes[1, 0].set_xticklabels(nodes, rotation=60, ha="right")
-    axes[1, 0].set_ylabel("Δ")
-    axes[1, 0].set_title(f"C. Top combo: {top_combo.perturbation.label}")
-
-    # Panel D — strongest single-node perturbation.
-    singles = [i for i in order if not (results[i].perturbation.anabolic_up and results[i].perturbation.catabolic_down)]
-    top_single = results[singles[0]] if singles else results[order[0]]
-    s_vals = [top_single.mean_delta[node_names.index(n)] for n in nodes]
-    s_errs = [top_single.std_delta[node_names.index(n)] for n in nodes]
-    axes[1, 1].bar(
-        nodes,
-        s_vals,
-        yerr=s_errs,
-        color=["#1f9d55" if v > 0 else "#c74343" for v in s_vals],
-        edgecolor="black", linewidth=0.4, error_kw=dict(lw=0.6, capsize=2),
-    )
-    axes[1, 1].axhline(0, color="k", lw=0.5)
-    axes[1, 1].set_xticklabels(nodes, rotation=60, ha="right")
-    axes[1, 1].set_ylabel("Δ")
-    axes[1, 1].set_title(f"D. Top single: {top_single.perturbation.label}")
-
-    fig.suptitle(title, fontsize=13)
-    fig.savefig(out_path, dpi=FIG_DPI, bbox_inches="tight")
-    plt.close(fig)
-
-
-# analyze_group_true_rescue's bar colours: blue = toward Normal, red = away.
-TRUE_RESCUE_TOWARD = "#1f66b8"
-TRUE_RESCUE_AWAY = "#c73333"
-# NORMAL_REF_THRESHOLD in RESCUE_NEW4_1_final.m — draw the 100% reference
-# line only when at least one strategy gets close to full restoration.
-NORMAL_REF_THRESHOLD = 80.0
-
-
-def plot_true_rescue_ranking(ranking, out_path: Path) -> None:
-    """Horizontal Top-N bar chart of TRUE Hyper→Normal rescue for one group.
-
-    Reproduces the figure drawn by analyze_group_true_rescue in
-    legacy/RESCUE_NEW4_1_final.m: strongest strategy at the top, one percentage
-    label per bar, a dashed zero line, and a dotted 100% reference line when
-    the best strategy reaches NORMAL_REF_THRESHOLD.
-    """
-    _apply_paper_style()
-
-    scores = np.asarray(ranking.rescue_percent, dtype=float)
-    labels = list(ranking.strategy_labels)
-    n = len(labels)
-
-    # Reverse so rank 1 is drawn at the top of the axis.
-    plot_scores = scores[::-1]
-    plot_labels = labels[::-1]
-
-    fig, ax = plt.subplots(figsize=(9.0, max(3.0, 0.42 * n + 1.6)))
-    colors = [TRUE_RESCUE_TOWARD if v >= 0 else TRUE_RESCUE_AWAY for v in plot_scores]
-    ax.barh(np.arange(1, n + 1), plot_scores, height=0.68, color=colors,
-            edgecolor="none")
-
-    best = float(scores.max()) if n else 0.0
-    lowest = float(min(plot_scores.min(), 0.0)) if n else 0.0
-
-    upper_target = best * 1.15 if best > 0 else 10.0
-    x_upper = max(np.ceil(upper_target / 10.0) * 10.0, 10.0)
-    x_lower = np.floor((lowest * 1.15) / 10.0) * 10.0 if lowest < 0 else 0.0
-
-    ax.axvline(0.0, color="black", linestyle="--", linewidth=1.2)
-    if best >= NORMAL_REF_THRESHOLD:
-        x_upper = max(x_upper, 105.0)
-        ax.axvline(100.0, color="0.35", linestyle=":", linewidth=1.2)
-        ax.text(100.0, n + 0.55, "100% Normal restoration", fontsize=8,
-                ha="right", va="bottom", color="0.35")
-
-    ax.set_xlim(x_lower, x_upper)
-    span = max(x_upper - x_lower, 1.0)
-
-    offset = 0.015 * span
-    for i, value in enumerate(plot_scores, start=1):
-        text = f"{value:.1f}%"
-        x = value + offset
-        # Labels always run rightwards from the bar's end. For a positive bar
-        # that puts them past the tip on white; for a negative bar it puts them
-        # back over the bar, which avoids colliding with the strategy names on
-        # the y-axis. Go white only when the label truly fits inside the bar.
-        approx_width = len(text) * 0.011 * span
-        inside_bar = value < 0 and (x + approx_width) <= 0.0
-        ax.text(
-            x, i, text,
-            va="center", ha="left", fontsize=8,
-            color="white" if inside_bar else "black",
-        )
-
-    ax.set_yticks(np.arange(1, n + 1))
-    ax.set_yticklabels(plot_labels)
-    ax.set_ylim(0.3, n + 0.7)
-    ax.set_xlabel("Rescue toward Normal profile (%)")
-    ax.set_title(
-        f"Top {n} rescue strategies — {ranking.group}\n"
-        "Hyper → Normal profile restoration"
-    )
-    ax.xaxis.grid(True, alpha=0.25)
-    ax.set_axisbelow(True)
-
     fig.savefig(out_path, dpi=FIG_DPI, bbox_inches="tight")
     plt.close(fig)
