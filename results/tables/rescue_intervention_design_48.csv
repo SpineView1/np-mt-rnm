@@ -1,0 +1,49 @@
+InterventionID,InterventionType,ShortLabel,ClampAssignments
+1,Single suppression,RhoA-E,RhoA-E=0
+2,Single suppression,PIEZO1,PIEZO1=0
+3,Single suppression,ROS,ROS=0
+4,Single suppression,P38,P38=0
+5,Single suppression,mTORC1,mTORC1=0
+6,Single suppression,NF-κB,NF-κB=0
+7,Single activation,SOX9,SOX9=1
+8,Single activation,PPARγ,PPARγ=1
+9,Single activation,HIF-1α,HIF-1α=1
+10,Single activation,NRF2,NRF2=1
+11,Single activation,SIRT1,SIRT1=1
+12,Single activation,FOXO,FOXO=1
+13,Dual activation + suppression,SOX9-RhoA-E,"SOX9=1, RhoA-E=0"
+14,Dual activation + suppression,SOX9-PIEZO1,"SOX9=1, PIEZO1=0"
+15,Dual activation + suppression,SOX9-ROS,"SOX9=1, ROS=0"
+16,Dual activation + suppression,SOX9-P38,"SOX9=1, P38=0"
+17,Dual activation + suppression,SOX9-mTORC1,"SOX9=1, mTORC1=0"
+18,Dual activation + suppression,SOX9-NF-κB,"SOX9=1, NF-κB=0"
+19,Dual activation + suppression,PPARγ-RhoA-E,"PPARγ=1, RhoA-E=0"
+20,Dual activation + suppression,PPARγ-PIEZO1,"PPARγ=1, PIEZO1=0"
+21,Dual activation + suppression,PPARγ-ROS,"PPARγ=1, ROS=0"
+22,Dual activation + suppression,PPARγ-P38,"PPARγ=1, P38=0"
+23,Dual activation + suppression,PPARγ-mTORC1,"PPARγ=1, mTORC1=0"
+24,Dual activation + suppression,PPARγ-NF-κB,"PPARγ=1, NF-κB=0"
+25,Dual activation + suppression,HIF-1α-RhoA-E,"HIF-1α=1, RhoA-E=0"
+26,Dual activation + suppression,HIF-1α-PIEZO1,"HIF-1α=1, PIEZO1=0"
+27,Dual activation + suppression,HIF-1α-ROS,"HIF-1α=1, ROS=0"
+28,Dual activation + suppression,HIF-1α-P38,"HIF-1α=1, P38=0"
+29,Dual activation + suppression,HIF-1α-mTORC1,"HIF-1α=1, mTORC1=0"
+30,Dual activation + suppression,HIF-1α-NF-κB,"HIF-1α=1, NF-κB=0"
+31,Dual activation + suppression,NRF2-RhoA-E,"NRF2=1, RhoA-E=0"
+32,Dual activation + suppression,NRF2-PIEZO1,"NRF2=1, PIEZO1=0"
+33,Dual activation + suppression,NRF2-ROS,"NRF2=1, ROS=0"
+34,Dual activation + suppression,NRF2-P38,"NRF2=1, P38=0"
+35,Dual activation + suppression,NRF2-mTORC1,"NRF2=1, mTORC1=0"
+36,Dual activation + suppression,NRF2-NF-κB,"NRF2=1, NF-κB=0"
+37,Dual activation + suppression,SIRT1-RhoA-E,"SIRT1=1, RhoA-E=0"
+38,Dual activation + suppression,SIRT1-PIEZO1,"SIRT1=1, PIEZO1=0"
+39,Dual activation + suppression,SIRT1-ROS,"SIRT1=1, ROS=0"
+40,Dual activation + suppression,SIRT1-P38,"SIRT1=1, P38=0"
+41,Dual activation + suppression,SIRT1-mTORC1,"SIRT1=1, mTORC1=0"
+42,Dual activation + suppression,SIRT1-NF-κB,"SIRT1=1, NF-κB=0"
+43,Dual activation + suppression,FOXO-RhoA-E,"FOXO=1, RhoA-E=0"
+44,Dual activation + suppression,FOXO-PIEZO1,"FOXO=1, PIEZO1=0"
+45,Dual activation + suppression,FOXO-ROS,"FOXO=1, ROS=0"
+46,Dual activation + suppression,FOXO-P38,"FOXO=1, P38=0"
+47,Dual activation + suppression,FOXO-mTORC1,"FOXO=1, mTORC1=0"
+48,Dual activation + suppression,FOXO-NF-κB,"FOXO=1, NF-κB=0"

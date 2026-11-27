@@ -1,6 +1,6 @@
 """Tests for the TRUE Hyper->Normal rescue metric.
 
-Ports analyze_group_true_rescue in legacy/RESCUE_NEW4_1_final.m:
+Ports analyze_group_true_rescue in legacy/RESCUE_NEW4_1_48_targets_HQ.m:
 
     D_Hyper       = norm(hyper_profile - normal_profile)
     D_Rescue(c)   = norm(rescued_profile(:,c) - normal_profile)

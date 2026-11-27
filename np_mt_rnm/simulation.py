@@ -1,12 +1,12 @@
 """Simulation runner — regimes, clamps, replicate loops.
 
-Ports logic from legacy/NP_MT_RNM_FALSIFY4_1.m (sections that prepare
+Ports logic from legacy/NP_MT_FALSIFY4_1_39.m (sections that prepare
 the loading regimes and execute ode45 per replicate).
 """
 from __future__ import annotations
 
+from collections.abc import Mapping
 from dataclasses import dataclass
-from typing import Mapping
 
 import numpy as np
 from scipy.integrate import solve_ivp
@@ -24,9 +24,9 @@ MECHANICAL_INPUTS: tuple[str, ...] = ("Hypo", "NL", "HL")
 # Per paper Section 2.2: "normal loading was represented by NL = 0.8
 # (Hypo = HL = 0.01), hyper-loading by HL = 0.8 (Hypo = NL = 0.01), and
 # hypo-loading by Hypo = 0.2 (NL = HL = 0.01)". Identical to
-# RESCUE_NEW4_1_final.m:109-111. (NP_MT_RNM_FALSIFY4_1.m:53 uses NL = 0.10 for
+# RESCUE_NEW4_1_48_targets_HQ.m:113-115. (NP_MT_FALSIFY4_1_39.m:61 uses NL = 0.10 for
 # Hyper; we follow the paper. With seeded ensembles the falsification outcome
-# is the same, 43/45, under either value.)
+# is the same, 37/39 with HSF1 and CCN2 contradictory, under either value.)
 REGIME_PRESETS: dict[str, dict[str, float]] = {
     "Hypo":   {"Hypo": 0.20, "NL": 0.01, "HL": 0.01},
     "Normal": {"Hypo": 0.01, "NL": 0.80, "HL": 0.01},
@@ -35,7 +35,7 @@ REGIME_PRESETS: dict[str, dict[str, float]] = {
 
 PAPER_REGIMES: tuple[str, ...] = ("Hypo", "Normal", "Hyper")
 
-# Seed of replicate 1 for each baseline ensemble. RESCUE_NEW4_1_final.m seeds
+# Seed of replicate 1 for each baseline ensemble. RESCUE_NEW4_1_48_targets_HQ.m seeds
 # replicate r = 1..100 with rng(BASE_SEED + offset + r, 'twister') where
 # BASE_SEED = 1 and offset = 1000 / 2000 / 3000 for Hypo / Normal / Hyper, so
 # replicate r of e.g. Hyper uses seed 3001 + r. run_replicates gives replicate
@@ -45,12 +45,12 @@ REGIME_SEEDS: dict[str, int] = {"Hypo": 1002, "Normal": 2002, "Hyper": 3002}
 
 # Solver settings per spec Section 6 (match MATLAB odeset).
 T_SPAN = (0.0, 100.0)
-SOLVER_KWARGS = dict(
-    method="RK45",
-    rtol=1e-8,
-    atol=1e-10,
-    max_step=0.5,
-)
+SOLVER_KWARGS = {
+    "method": "RK45",
+    "rtol": 1e-8,
+    "atol": 1e-10,
+    "max_step": 0.5,
+}
 
 
 def build_clamps(
@@ -207,7 +207,7 @@ def run_replicates(
     replicate instead of drawing a random one. This is what makes the rescue
     screen paired-sequential: replicate r's perturbed run continues from
     replicate r's own Hyper steady state, mirroring
-    run_reps_from_replicate_states_parallel in RESCUE_NEW4_1_final.m. When it
+    run_reps_from_replicate_states_parallel in RESCUE_NEW4_1_48_targets_HQ.m. When it
     is given, `seed` no longer influences the initial conditions.
     """
     seeds = [seed + k for k in range(n_reps)]

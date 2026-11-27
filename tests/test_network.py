@@ -5,7 +5,6 @@ Targets: np_mt_rnm/network.py (ports legacy/CreateMatrices_new.m).
 from pathlib import Path
 
 import numpy as np
-import pytest
 
 from np_mt_rnm.network import load_network
 

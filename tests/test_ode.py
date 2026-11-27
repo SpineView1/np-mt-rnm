@@ -6,10 +6,8 @@ Expected values computed by hand in tests/ode_hand_computation.py.
 Replace the two sentinels below with the actual printed values.
 """
 import numpy as np
-import pytest
 
 from np_mt_rnm.ode import squads_rhs
-
 
 # ⬇ Paste the actual values from `python tests/ode_hand_computation.py`.
 _EXPECTED_A = 0.52989628345489159   # Case A (single activator)

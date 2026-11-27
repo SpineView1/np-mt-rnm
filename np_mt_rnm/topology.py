@@ -8,7 +8,6 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 import networkx as nx
-import numpy as np
 
 from np_mt_rnm.network import Network
 

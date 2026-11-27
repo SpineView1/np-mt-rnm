@@ -1,0 +1,12 @@
+category,group,top_intervention,rescue_percent,in_manuscript
+ecm_matrix,ECM anabolism & phenotype markers,SOX9-ROS,85.85432695406665,True
+oxidative_proteostasis,Oxidative-stress defense & proteostasis,FOXO-ROS,68.91112073921335,True
+growth_factor,Growth factors,SOX9-NF-κB,66.03141923663144,True
+cytokines_chemokines_proteases,"Cytokines, chemokines, proteases & others",SOX9-NF-κB,56.97387140160461,True
+cell_fate,"Cell survival, apoptosis & mitophagy/DNA-damage",NRF2-PIEZO1,37.5306139667311,True
+transcription_factor,Transcription Factors,SOX9-ROS,30.719441503787444,True
+metabolic,Metabolic & related,PPARγ-ROS,23.303999347582458,True
+rho_cytoskeletal,"Rho GTPases, cytoskeletal & Hippo regulators",RhoA-E,14.688437480824614,False
+ion_channel,Ion channels & related,PPARγ-PIEZO1,10.358389834603383,True
+mechanosensor,Mechanical stimuli & its receptors,NRF2-PIEZO1,8.288299725828672,False
+mapk,MAPK & stress-activated kinases,NRF2-PIEZO1,5.919650455112364,False

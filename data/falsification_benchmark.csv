@@ -1,46 +1,40 @@
-node,class,expected_direction,reference_tag
-SOX9,anabolic,Normal>Hyper,MATLAB_ANABOLIC_LIST
-ACAN,anabolic,Normal>Hyper,MATLAB_ANABOLIC_LIST
-COL2A1,anabolic,Normal>Hyper,MATLAB_ANABOLIC_LIST
-TIMP3,anabolic,Normal>Hyper,MATLAB_ANABOLIC_LIST
-Bcl2,anabolic,Normal>Hyper,MATLAB_ANABOLIC_LIST
-AQP1,anabolic,Normal>Hyper,MATLAB_ANABOLIC_LIST
-AQP5,anabolic,Normal>Hyper,MATLAB_ANABOLIC_LIST
-HO-1,anabolic,Normal>Hyper,MATLAB_ANABOLIC_LIST
-GPX1,anabolic,Normal>Hyper,MATLAB_ANABOLIC_LIST
-SOD2,anabolic,Normal>Hyper,MATLAB_ANABOLIC_LIST
-CAT,anabolic,Normal>Hyper,MATLAB_ANABOLIC_LIST
-HSP27,anabolic,Normal>Hyper,MATLAB_ANABOLIC_LIST
-HSP70,anabolic,Normal>Hyper,MATLAB_ANABOLIC_LIST
-NRF2,anabolic,Normal>Hyper,MATLAB_ANABOLIC_LIST
-HIF-1α,anabolic,Normal>Hyper,MATLAB_ANABOLIC_LIST
-SIRT1,anabolic,Normal>Hyper,MATLAB_ANABOLIC_LIST
-AMPK,anabolic,Normal>Hyper,MATLAB_ANABOLIC_LIST
-COL1A1,catabolic,Normal<Hyper,MATLAB_CATABOLIC_LIST
-COL10A1,catabolic,Normal<Hyper,MATLAB_CATABOLIC_LIST
-IL1β,catabolic,Normal<Hyper,MATLAB_CATABOLIC_LIST
-IL6,catabolic,Normal<Hyper,MATLAB_CATABOLIC_LIST
-IL8,catabolic,Normal<Hyper,MATLAB_CATABOLIC_LIST
-TNF,catabolic,Normal<Hyper,MATLAB_CATABOLIC_LIST
-MMP3,catabolic,Normal<Hyper,MATLAB_CATABOLIC_LIST
-MMP13,catabolic,Normal<Hyper,MATLAB_CATABOLIC_LIST
-ADAMTS4/5,catabolic,Normal<Hyper,MATLAB_CATABOLIC_LIST
-CCL2,catabolic,Normal<Hyper,MATLAB_CATABOLIC_LIST
-CXCL1,catabolic,Normal<Hyper,MATLAB_CATABOLIC_LIST
-CXCL3,catabolic,Normal<Hyper,MATLAB_CATABOLIC_LIST
-COX-2,catabolic,Normal<Hyper,MATLAB_CATABOLIC_LIST
-PGE2,catabolic,Normal<Hyper,MATLAB_CATABOLIC_LIST
-BAX,catabolic,Normal<Hyper,MATLAB_CATABOLIC_LIST
-CASP3,catabolic,Normal<Hyper,MATLAB_CATABOLIC_LIST
-CASP9,catabolic,Normal<Hyper,MATLAB_CATABOLIC_LIST
-Wnt3a,catabolic,Normal<Hyper,MATLAB_CATABOLIC_LIST
-β-catenin,catabolic,Normal<Hyper,MATLAB_CATABOLIC_LIST
-NF-κB,catabolic,Normal<Hyper,MATLAB_CATABOLIC_LIST
-MRTF-A,catabolic,Normal<Hyper,MATLAB_CATABOLIC_LIST
-ROS,catabolic,Normal<Hyper,MATLAB_CATABOLIC_LIST
-YAP/TAZ,catabolic,Normal<Hyper,MATLAB_CATABOLIC_LIST
-TonEBP,catabolic,Normal<Hyper,MATLAB_CATABOLIC_LIST
-P38,catabolic,Normal<Hyper,MATLAB_CATABOLIC_LIST
-JNK,catabolic,Normal<Hyper,MATLAB_CATABOLIC_LIST
-HSF1,catabolic,Normal<Hyper,MATLAB_CATABOLIC_LIST
-TGFβ,catabolic,Normal<Hyper,MATLAB_CATABOLIC_LIST
+node,class,expected_direction,literature_direction,benchmark_ids,experimental_evidence,reference_tag
+ACAN,anabolic,Normal>Hyper,+,B01;B02,NL-like up; HL-like down,zhang2019mechanical
+COL2A1,anabolic,Normal>Hyper,+,B03;B04,NL-like up; HL-like down,zhang2019mechanical
+TIMP3,anabolic,Normal>Hyper,+,B05;B05,NL-like up; HL-like down,Li2016_IntJMedSci
+Bcl2,anabolic,Normal>Hyper,+,B06;B07,NL-like up; HL-like down,Wang2017_NCadherin_CompressionNP
+SOD2,anabolic,Normal>Hyper,+,B08,HL-like down,Hu2020_HSP90_NPSC_Compression
+SOX9,anabolic,Normal>Hyper,+,B09;B10,NL-like up; HL-like down,LeMaitre2008human;sun2015adipose
+COL1A1,catabolic,Normal<Hyper,-,B11;B12,NL-like down; HL-like up,Hu2025_TRPV4PressureNP;Ke2021_Compression_COL1A1
+COL10A1,catabolic,Normal<Hyper,-,B13,HL-like up,liang2008prolonged
+MMP3,catabolic,Normal<Hyper,-,B14,HL-like up,zhang2019mechanical
+MMP13,catabolic,Normal<Hyper,-,B15;B16,NL-like down; HL-like up,Chen2020_FluidShearHO1;zhang2019mechanical
+ADAMTS4/5,catabolic,Normal<Hyper,-,B17,HL-like up,zhang2019mechanical
+TNF,catabolic,Normal<Hyper,-,B18,HL-like up,wang2018high
+IL1β,catabolic,Normal<Hyper,-,B19,HL-like up,wang2018high
+IL6,catabolic,Normal<Hyper,-,B20,HL-like up,wang2018high
+IL8,catabolic,Normal<Hyper,-,B21,HL-like up,gawri2014high
+CCL2,catabolic,Normal<Hyper,-,B22,HL-like up,gawri2014high
+CXCL1,catabolic,Normal<Hyper,-,B23,HL-like up,gawri2014high
+PGE2,catabolic,Normal<Hyper,-,B24,HL-like up,cambria2021trpv4
+COX-2,catabolic,Normal<Hyper,-,B25,HL-like up,Sowa2011_SpineJ_CompressionNP
+TGFβ,catabolic,Normal<Hyper,-,B26,HL-like up,gawri2014high
+Wnt3a,catabolic,Normal<Hyper,-,B27;B28,NL-like down; HL-like up,shi2022high
+BAX,catabolic,Normal<Hyper,-,B29,HL-like up,zhang2019mechanical
+CASP3,catabolic,Normal<Hyper,-,B30;B31,NL-like down; HL-like up,Wang2017_NCadherin_CompressionNP;Zhuo2021_LC3B_Fas_Compression
+CASP9,catabolic,Normal<Hyper,-,B32,HL-like up,sun2015adipose
+HSF1,catabolic,Normal<Hyper,-,B33,HL-like up,chooi2016compression
+MRTF-A,catabolic,Normal<Hyper,-,B34,HL-like up,Song2022_RhoA_MRTFA_NP
+YAP/TAZ,catabolic,Normal<Hyper,-,B35,HL-like up,Piezo1_YAP_TAZ_2025
+NF-κB,catabolic,Normal<Hyper,-,B36,HL-like up,wang2018high
+β-catenin,catabolic,Normal<Hyper,-,B37;B38,NL-like down; HL-like up,shi2022high
+P38,catabolic,Normal<Hyper,-,B39;B40,NL-like down; HL-like up,Li2017_ArthritisResTher
+JNK,catabolic,Normal<Hyper,-,B41,HL-like up,Li2021_ConnectTissueRes
+ROS,catabolic,Normal<Hyper,-,B42;B43,NL-like down; HL-like up,Li2017_ArthritisResTher
+PIEZO1,catabolic,Normal<Hyper,-,B44,HL-like up,shi2022excessive
+DRP1,catabolic,Normal<Hyper,-,B45,HL-like up,Kang2020_MitoQ_DRP1
+PKN1,catabolic,Normal<Hyper,-,B46,HL-like up,Wang2023_PKN1CompressionNP
+VEGF,catabolic,Normal<Hyper,-,B47,HL-like up,Mao2026_MechanicalVEGF_NP
+CCN2,catabolic,Normal<Hyper,-,B48,HL-like up,Song2022_RhoA_MRTFA_NP
+GSK3B,catabolic,Normal<Hyper,-,B49;B50,NL-like down; HL-like up,Li2017_GSK3B_CompressionNP
+RUNX2,catabolic,Normal<Hyper,-,B51,HL-like up,SilvaHolguin2020_RUNX2_Loading

@@ -27,7 +27,7 @@ STEPS = [
 def main() -> None:
     for step in STEPS:
         print(f"\n===== {step} =====", flush=True)
-        result = subprocess.run([sys.executable, str(ROOT / step)], cwd=ROOT)
+        result = subprocess.run([sys.executable, str(ROOT / step)], check=False, cwd=ROOT)
         if result.returncode != 0:
             print(f"FAILED: {step} (exit code {result.returncode})")
             sys.exit(result.returncode)
